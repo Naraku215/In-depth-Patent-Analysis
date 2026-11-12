@@ -106,7 +106,10 @@ function runCheck(spec) {
 
   const artifacts = {};
   for (const key of ["station", "atlas", "report"]) {
-    const fp = join(wd, cfg.outputs[key]);
+    // 文档以 doc.md 为准（它是源，改完就该立刻被校验到），没有才退回构建产物
+    const fp = key === "report"
+      ? (existsSync(join(wd, "doc.md")) ? join(wd, "doc.md") : join(wd, cfg.outputs.report))
+      : join(wd, cfg.outputs[key]);
     if (existsSync(fp)) artifacts[key] = { path: fp, dir: dirname(fp), text: read(fp) };
   }
   const result = auditPatent({
@@ -321,6 +324,11 @@ async function cmdPackage(spec) {
   const p = pickTarget(spec);
   const wd = workDir(p.id);
   const facts = readJson(join(wd, "facts.json")) || {};
+
+  const reportSrc = join(wd, cfg.outputs.report);
+  if (!existsSync(reportSrc)) {
+    return fail(`没有文档产出（${cfg.outputs.report}）。文档是必出项，先写 doc.md 再 build。`);
+  }
 
   const c = runCheck(p.id);
   if (!c.ok) {

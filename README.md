@@ -1,88 +1,103 @@
 # 专利解析 Agent
 
-一件专利 → **一个 `index.html`**。里面是三部分：
+把一个专利文件夹，变成**一个可以点着看的 `index.html`**：三维解剖台、工程图鉴、深度解读，三样按这件专利适不适合来决定出几样。
 
-| 标签 | 是什么 |
-|---|---|
-| 01 专利解剖台 | 三维交互：拖动旋转、爆炸分解、可移动剖切面，右侧逐视图解读 + 部件标号表 |
-| 02 专利结构动态演算图鉴 | 用 [anatomy](https://github.com/wheresryan22/anatomy) 技能生成的等轴测工程图组，带实时读数 |
-| 03 深度解析 | 固定模板的文档：结论 / 结构 / 原理 / 工艺 / 数据 / 权项 / 证据边界 / 数值出处 |
+用于绿氢 / 燃料电池这类**系统、装置、流程、反应器**专利——目标是让人在半小时内看懂一件本来要读两天的专利。
 
-交付目录里只有 `index.html` 要打开，三部分另存于 `_parts/` 可单独分发。
+---
 
-## 用法
+## 用起来就三步
 
-把一件专利放进去：
+**1. 克隆到本地，用你的 agent 客户端打开这个文件夹**
+
+Codex、Claude Code、Work Buddy、Cursor 之类，只要是能读 `AGENTS.md`、能跑命令的客户端都行。
+
+**2. 把你的专利放进去**
 
 ```
-patents/<任意名>/
-├── full.md        ← 专利全文（含权利要求书）
-└── images/        ← full.md 里 ![](images/x.jpg) 引用的图
+patents/
+└── 你的专利名/           ← 目录名随意
+    ├── full.md            ← 专利全文（要含权利要求书）
+    └── images/            ← full.md 里 ![](images/xxx.jpg) 引用的图
 ```
 
-在 agent 里说一句「**解析这个专利**」，它跑完整个流程。
+**3. 在对话里说一句**
 
-手动跑：
+> 解析一下 US 10,150,093 B2
+
+它会自己跑：读专利 → 判断这件专利该出哪几种产物 → 画图 → 建解剖台 → 写文档 → 自检。跑完给你一个 `out/<id>/index.html`，双击就开。
+
+> 想知道进度：说「状态」，或者 `node bin/patent.mjs status`。
+
+---
+
+## 会得到什么
+
+一个 `index.html`，里面是 1–3 张卡片：
+
+| 产出 | 什么时候有 | 是什么 |
+|---|---|---|
+| **专利解剖台** | 有明确三维结构（反应器、电堆、测试台、装配体） | 按专利尺寸搭的三维模型，可旋转、爆炸分解、剖切 |
+| **专利结构动态演算图鉴** | 有可以画成一台机器的原理（受压、流动、装配、工艺步骤） | 等轴测工程图，指针一动读数就变 |
+| **深度解析** | **每件都有** | 固定模板：结论、结构、原理、工艺、数据、权项、证据边界、假设与简化 |
+
+**不适合的不硬做。** 纯方法、纯配方、纯参数型专利，可能只出文档——这比画一张似是而非的机器图有用。
+
+---
+
+## 它凭什么可信
+
+这个项目唯一的硬要求是：**不能把专利理解歪**。
+
+- 产出里每个数字、每个部件标号、每处「权项 N」、每处段号，都要能在 `full.md` 里查到；
+- 查不到的，必须写明「这是模型值 / 这是假设」，并说明依据；
+- 假设必须符合学科常识（泵就是泵、换热器就是换热器），不能为了画面好看编结构；
+- 专利没证明的事，写进「证据边界」，不替它圆。
+
+这些不是事后检查，是**生成时的门禁**：`build` 跑完自动校验，`package` 之前再校验一次，**不过就不出包**。
+
+---
+
+## 手动跑（不想让 agent 代劳时）
 
 ```bash
-node bin/patent.mjs doctor
-node bin/patent.mjs list
-node bin/patent.mjs extract      # full.md → facts.json
-node bin/patent.mjs facts        # 看权项与标号表
-#   ↓ 写三个文件：build/fig-*.mjs、station/js/scenes.js、station/js/report.js、doc.md
-node bin/patent.mjs build        # 出三部分，并自动跑一次内部校验
-node bin/patent.mjs verify       # 悬空线端 0 + headless console clean
-node bin/patent.mjs package      # 校验通过才出 index.html
+node bin/patent.mjs doctor        # 环境自检
+node bin/patent.mjs list          # 看看有哪些专利
+node bin/patent.mjs extract       # full.md → facts.json
+node bin/patent.mjs facts         # 读权项与标号表
+#   ↓ 这一步写 1~3 个文件（见 work/<id>/）
+node bin/patent.mjs build
+node bin/patent.mjs verify
+node bin/patent.mjs package
 ```
 
-## 一次只解析一件
+无第三方依赖，不用 `npm install`。`verify` 需要本机有 Chrome / Chromium。
 
-不做批量、不做专利群横向对比。批量会让每件都变浅，单件才有厚度。
-输入目录里有多件时命令必须带 id；只有一件时可省略。
-
-## 校验是规矩，不是事后审计
-
-`build` 结束和 `package` 之前各跑一次**内部校验**，不通过就不出包。
-交付里**没有审计文件**——规矩在生成时就成立：
-
-| 规矩 | 检查 |
-|---|---|
-| 数字要有出处 | 产出里的数字能否在 `full.md` 里检索到；找不到的必须在标了「读数说明/模型/换算」的段落里 |
-| 标号要真实 | 部件编号必须来自专利的标号表，不许自编 |
-| 权项要对上 | 「权项 N」不超过权利要求总数 |
-| 段号要对上 | 「[0013]」必须真实存在 |
-| 不许留占位 | `{{…}}` 全部替换 |
-| 文字不能坏 | 无重复汉字损坏 |
-| 图要立得住 | 悬空线端 0、console clean |
-
-需要看明细时用 `node bin/patent.mjs check`（只在终端打印，不写交付文件）。
-
-## 文档是固定模板
-
-`templates/doc/skeleton.md` 定义了八个正文章节 + 两个附录，顺序固定。
-「阅读约定」原样保留在文档开头，说明哪些是专利原文、哪些是分析、哪些是模型值。
-未填的 `{{…}}` 会被校验拦下。
+---
 
 ## 目录
 
 ```
-AGENTS.md              agent 作业手册（触发词、流程、门规）
-SKILL.md               技能入口卡（给支持 skill 的 harness 用）
-bin/patent.mjs         CLI
-lib/                   解析 / 校验 / 渲染 / 打包
-prompts/               六阶段提示词
-templates/             解剖台站点、图脚本、文档模板
-skills/anatomy/        vendored anatomy 技能（MIT）
-docs/METHOD.md         方法论：为什么是这个结构
-docs/QUALITY.md        质检清单（源自一次 14 项返工）
-patents/               输入
-work/                  工作区（gitignored）
-out/                   交付（gitignored）
+AGENTS.md          agent 作业手册（读这个就知道怎么干活）
+SKILL.md           给支持 skill 的客户端用的入口卡
+patents/           你把专利放这里
+out/               解析结果（gitignored）
+work/              中间产物（gitignored）
+bin/patent.mjs     命令行
+lib/               解析 / 校验 / 渲染 / 打包
+prompts/           六个阶段的提示词
+templates/         解剖台站点、图脚本、文档模板
+skills/anatomy/    vendored 的 anatomy 制图技能（MIT）
+examples/          一个虚构专利的完整样例
+docs/              方法论与质检清单（维护者看）
 ```
+
+---
 
 ## 环境
 
-Node.js ≥ 20.10；`verify` 需要 Chrome / Chromium。无第三方依赖，不用 `npm install`。
+- Node.js ≥ 20.10
+- Chrome / Chromium（仅 `verify` 与缩略图需要）
 
 ## License
 
