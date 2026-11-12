@@ -113,7 +113,7 @@ check("package：校验不过就拒绝出包", () => {
   }
 });
 
-check("package：一个 index + 三部分 + 缩略图", () => {
+check("package：解剖台 + 文档必有，图鉴可选", () => {
   const r = run(["package", ID], { allowFail: true });
   if (r.code !== 0) return { ok: false, detail: "package 失败：" + r.out.slice(0, 300) };
   const dir = join(ROOT, "out", ID);
@@ -137,12 +137,12 @@ check("check：文档缺固定章节会被抓", () => {
   }
 });
 
-check("灵活：不适合画图时，只出文档也能交付", () => {
+check("灵活：没有图鉴时，两件也能交付（2 张卡）", () => {
   const W = join(ROOT, "work", ID);
   const stash = join(ROOT, "work", ".stash-" + ID);
   rmSync(stash, { recursive: true, force: true });
   mkdirSync(stash, { recursive: true });
-  const moved = ["专利解剖台.html", "专利结构动态演算图鉴.html"].filter((f) => existsSync(join(W, f)));
+  const moved = ["专利结构动态演算图鉴.html"].filter((f) => existsSync(join(W, f)));
   for (const f of moved) copyFileSync(join(W, f), join(stash, f));
   for (const f of moved) rmSync(join(W, f), { force: true });
   try {
@@ -150,7 +150,7 @@ check("灵活：不适合画图时，只出文档也能交付", () => {
     const idx = join(ROOT, "out", ID, "index.html");
     const html = existsSync(idx) ? readFileSync(idx, "utf8") : "";
     const cards = (html.match(/class="card"/g) || []).length;
-    return { ok: r.code === 0 && cards === 1, detail: `卡片 ${cards} 张` };
+    return { ok: r.code === 0 && cards === 2, detail: `卡片 ${cards} 张` };
   } finally {
     for (const f of moved) copyFileSync(join(stash, f), join(W, f));
     rmSync(stash, { recursive: true, force: true });

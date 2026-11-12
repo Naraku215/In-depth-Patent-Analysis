@@ -325,9 +325,14 @@ async function cmdPackage(spec) {
   const wd = workDir(p.id);
   const facts = readJson(join(wd, "facts.json")) || {};
 
-  const reportSrc = join(wd, cfg.outputs.report);
-  if (!existsSync(reportSrc)) {
-    return fail(`没有文档产出（${cfg.outputs.report}）。文档是必出项，先写 doc.md 再 build。`);
+  // 固定两件：解剖台 + 文档。图鉴按专利决定，可以没有。
+  for (const [label, file] of [["解剖台", cfg.outputs.station], ["文档", cfg.outputs.report]]) {
+    if (!existsSync(join(wd, file))) {
+      return fail(`没有${label}产出（${file}）。这两件是固定要有的，先补上再 build。`);
+    }
+  }
+  if (!existsSync(join(wd, cfg.outputs.atlas))) {
+    info("没出图鉴 —— 这件专利没有可画的实体结构，按两件交付。");
   }
 
   const c = runCheck(p.id);
