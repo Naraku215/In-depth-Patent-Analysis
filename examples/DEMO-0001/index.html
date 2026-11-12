@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DEMO-0001 · 专利解析</title>
+<style>
+:root{
+  --paper:#f2f2ef; --card:#fbfbfa; --text:#57575a; --strong:#18181a; --muted:#8c8c90;
+  --rule:#dcdcd9; --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--text);
+  font-family:"Inter","Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  font-size:15px;line-height:1.85;-webkit-font-smoothing:antialiased}
+main{max-width:1080px;margin:0 auto;padding:64px 28px 100px}
+.kicker{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 0 14px}
+h1{font-size:30px;line-height:1.28;color:var(--strong);font-weight:600;margin:0 0 14px;letter-spacing:-.01em}
+.meta{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin:0 0 8px}
+.lede{font-size:14.5px;margin:0 0 6px;max-width:760px}
+.cards{margin-top:44px;display:grid;gap:16px}
+a.card{display:grid;grid-template-columns:300px 1fr;text-decoration:none;color:inherit;
+  background:var(--card);border:1px solid var(--rule);border-radius:14px;overflow:hidden;
+  transition:border-color .18s ease,transform .18s ease,box-shadow .18s ease}
+a.card:hover{border-color:#bdbdb6;transform:translateY(-2px);
+  box-shadow:0 1px 1px -0.5px #0000000c,0 10px 24px -12px #0000001f}
+.thumb{background:#e9e9e5;display:flex;align-items:center;justify-content:center;overflow:hidden;
+  border-right:1px solid var(--rule);min-height:210px}
+.thumb img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+.thumb.empty{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.body{padding:22px 26px;display:flex;flex-direction:column;justify-content:center}
+.no{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--muted);margin-bottom:6px}
+.name{font-size:18px;color:var(--strong);font-weight:600;margin:0 0 8px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.name span{font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:400}
+.desc{font-size:13.5px;margin:0;line-height:1.8}
+.open{margin-top:12px;font-family:var(--mono);font-size:11.5px;color:var(--strong)}
+.open:after{content:" \2192"}
+footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:11px;color:var(--muted);display:flex;gap:18px;flex-wrap:wrap}
+@media(max-width:720px){
+  main{padding:40px 16px 72px}
+  h1{font-size:23px}
+  a.card{grid-template-columns:1fr}
+  .thumb{min-height:160px;border-right:0;border-bottom:1px solid var(--rule)}
+  .body{padding:18px}
+}
+</style></head>
+<body><main>
+  <p class="kicker">专利解析 · DEMO-0001</p>
+  <p class="meta">DEMO-0001</p>
+  <h1>一种带分区冷却的微通道反应器</h1>
+  <p class="lede">三部分：一个可以拆开看的三维结构，一组演示原理的工程图，一份可回溯到原文的解读。</p>
+  <p class="lede" style="color:var(--muted);font-size:13px">数字与标号都能在专利原文里查到；专利没证明的事写在文档「证据边界」一节。</p>
+
+  <div class="cards">
+    <a class="card" href="01-station.html">
+      <div class="thumb"><img src="thumbs/station.png" alt=""></div>
+      <div class="body">
+        <div class="no">01</div>
+        <div class="name">专利解剖台 <span>三维交互</span></div>
+        <p class="desc">按专利尺寸搭的三维模型：拖动旋转、爆炸分解、可移动剖切面。右侧是逐视图解读与部件标号表。</p>
+        <div class="open">打开解剖台</div>
+      </div>
+    </a>
+    <a class="card" href="02-atlas.html">
+      <div class="thumb"><img src="thumbs/atlas.png" alt=""></div>
+      <div class="body">
+        <div class="no">02</div>
+        <div class="name">专利结构动态演算图鉴 <span>等轴测图组</span></div>
+        <p class="desc">每张图是一台按专利数字搭的装置，指针一动读数就变，附图例与说明。</p>
+        <div class="open">打开图鉴</div>
+      </div>
+    </a>
+    <a class="card" href="03-report.html">
+      <div class="thumb"><img src="thumbs/report.png" alt=""></div>
+      <div class="body">
+        <div class="no">03</div>
+        <div class="name">深度解析 <span>文档</span></div>
+        <p class="desc">结论、结构、原理、工艺、数据、权项、证据边界、数值出处附录。固定模板。</p>
+        <div class="open">打开文档</div>
+      </div>
+    </a>
+  </div>
+
+  <footer>
+    <span>2026-11-12 06:31</span>
+    <span>数字与标号均可回溯到专利原文</span>
+  </footer>
+</main></body></html>

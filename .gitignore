@@ -1,0 +1,13 @@
+node_modules/
+.cache/
+
+# 工作区（可重建）
+work/
+
+# 交付（体积大，按需归档）
+out/
+
+# 系统
+.DS_Store
+Thumbs.db
+*.log

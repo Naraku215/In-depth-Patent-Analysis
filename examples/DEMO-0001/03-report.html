@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>一种带分区冷却的微通道反应器</title>
+<style>
+:root{--paper:#f2f2ef;--card:#fbfbfa;--text:#57575a;--strong:#18181a;--muted:#8c8c90;--rule:#dcdcd9;--code:#3a3a3e}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--text);font-family:"Inter","Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif;font-size:15px;line-height:1.9;-webkit-font-smoothing:antialiased}
+main{max-width:780px;margin:0 auto;padding:72px 26px 120px}
+h1{font-size:31px;line-height:1.3;color:var(--strong);font-weight:600;margin:0 0 10px;letter-spacing:-.01em}
+h2{font-size:20px;color:var(--strong);font-weight:600;margin:46px 0 16px}
+h3{font-size:16.5px;color:var(--strong);font-weight:600;margin:38px 0 12px}
+h4{font-size:14px;color:var(--strong);font-weight:600;margin:26px 0 8px;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;letter-spacing:.02em}
+p{margin:0 0 14px}
+strong{color:var(--strong);font-weight:600}
+code{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:.9em;background:#e9e9e5;border-radius:3px;padding:1px 5px;color:var(--code)}
+pre{background:#e9e9e5;border-radius:8px;padding:14px 16px;overflow:auto;font-size:12.5px;line-height:1.6}
+pre code{background:none;padding:0}
+hr{border:0;border-top:1px solid var(--rule);margin:34px 0}
+blockquote{margin:0 0 20px;padding:2px 0 2px 16px;border-left:2px solid #b9b9b2}
+blockquote p{margin:0 0 6px;color:var(--muted)}
+ol,ul{margin:0 0 16px;padding-left:22px}
+li{margin:0 0 7px}
+table{width:100%;border-collapse:collapse;margin:20px 0 24px;font-size:12.5px;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+th{text-align:left;font-weight:500;color:var(--muted);padding:8px;border-bottom:1px solid #b9b9b2;white-space:nowrap}
+td{padding:8px;border-bottom:1px solid var(--rule);line-height:1.55;vertical-align:top}
+td:first-child{color:var(--strong);white-space:nowrap}
+@media(max-width:560px){main{padding:44px 16px 80px}h1{font-size:24px}h2{font-size:18px}table{font-size:11px}}
+</style></head><body><main>
+
+<h1>DEMO-0001《一种带分区冷却的微通道反应器》</h1>
+<blockquote><p>权利人：演示专利（虚构）　发明人：—　申请号 —　授权/公开 —</p></blockquote>
+<blockquote><p><strong>阅读约定</strong></p></blockquote>
+<p>&gt;</p>
+<blockquote><p>1. 本文出现具体数值、权项号、部件标号的地方，都可在专利原文中检索到；附录 A 列出每个数值的出处。</p><p>2. 标「为什么」「解读」「推断」的段落是分析，不是专利原文。</p><p>3. 配套图鉴里标「读数说明」的数字，是图中小模型的输出，不是专利值。</p><p>4. 专利没有证明的东西集中写在第 7 节，不散落在正文里替它圆。</p></blockquote>
+<hr>
+<h2>0 · 一句话结论</h2>
+<p>这件专利把冷却层拆成若干彼此独立的冷却场，每场单独供液、单独排汽，解决常规单程冷却「沿程升温、出口端冷却能力下降」的问题。</p>
+<p><strong>三个数字</strong>：</p>
+<table><thead><tr><th>指标</th><th>数值</th><th>出处</th></tr></thead><tbody><tr><td>反应通道高度</td><td>0.4 mm 至 8 mm</td><td>权项 3</td></tr><tr><td>冷却层厚度</td><td>0.1 mm 至 5 mm</td><td>权项 3</td></tr><tr><td>冷却场进出</td><td>每场一个供液口、一个排汽口</td><td>权项 1</td></tr></tbody></table>
+<p><strong>但是</strong>：全文没有给任何换热或温度数据，只给了「流量偏差小于 5%」这一条结论。</p>
+<hr>
+<h2>1 · 它要解决的问题</h2>
+<p>[0002] 指出强放热反应在微通道中会出现热点；[0003] 指出常规单侧冷却层中冷却剂沿程升温，靠近出口处冷却能力显著下降。</p>
+<hr>
+<h2>2 · 结构与几何</h2>
+<table><thead><tr><th>部件</th><th>标号</th><th>材料 / 规格</th><th>尺寸</th><th>作用</th></tr></thead><tbody><tr><td>反应层</td><td>1</td><td>含催化剂</td><td>反应通道 0.4–8 mm</td><td>承载反应</td></tr><tr><td>冷却层 / 冷却场</td><td>2</td><td>环状或波状流道</td><td>厚 0.1–5 mm</td><td>取热</td></tr><tr><td>分配层</td><td>3</td><td>含供液与排汽管线</td><td>—</td><td>分配与排出冷却剂</td></tr><tr><td>供液管线</td><td>7</td><td>水力直径沿流向递减</td><td>—</td><td>送液</td></tr><tr><td>排汽管线</td><td>9</td><td>水力直径沿流向递增</td><td>—</td><td>排汽</td></tr></tbody></table>
+<p>堆叠序列自上而下为反应层、冷却层、分配层三层（权项 1）。</p>
+<hr>
+<h2>3 · 原理：为什么这样设计</h2>
+<p>[0008] 要求每个冷却场只有一个供液口和一个排汽口。这是全篇的结构核心。</p>
+<p>为什么：如果多个场共用一条供液总管，冷却剂在总管里就已经沿程升温，后面的场拿到的不是同温新鲜液；只有让每个场独立取液、独立排汽，才能保证每一场都在同一入口温度下工作（推断，说明书未直接论证）。</p>
+<p>[0010] 说冷却场流道为环状或波状、至少有一个折弯，理由是让重力对流量的影响减小、避免液滴被夹带。这一段是说明书原文。</p>
+<hr>
+<h2>4 · 制备 / 工艺流程</h2>
+<p>原文未给出制备流程，只给出结构与材料关系。</p>
+<hr>
+<h2>5 · 数据：它到底做到了什么</h2>
+<table><thead><tr><th>指标</th><th>数值</th><th>条件</th><th>出处</th></tr></thead><tbody><tr><td>冷却场之间流量偏差</td><td>小于 5%</td><td>未给工况</td><td>[0011]</td></tr></tbody></table>
+<p>除此之外没有换热系数、压降或温度分布的数据。</p>
+<hr>
+<h2>6 · 权利要求布局</h2>
+<ul><li><strong>权 1</strong>：三层叠合（反应层 / 冷却层 / 分配层）+ 每场单进单出</li><li><strong>权 2</strong>：冷却场流道为环状或波状且至少一个折弯</li><li><strong>权 3</strong>：反应通道 0.4–8 mm、冷却层 0.1–5 mm</li></ul>
+<p>独权宽（只看结构与连接关系），从权把几何与尺寸收窄。绕行必须避开「每场单进单出」这一条。</p>
+<hr>
+<h2>7 · 证据边界</h2>
+<ol><li><strong>没有证明</strong>：等温运行。权利要求主张近等温，但全文没有温度场测量。</li><li><strong>没有证明</strong>：换热能力。没有给换热系数或压降。</li><li><strong>没有证明</strong>：冷却场数量的上限。只说「两个以上」。</li></ol>
+<hr>
+<h2>8 · 定位与自由实施</h2>
+<p>属于「分区蒸发冷却」这一路线。</p>
+<p><strong>要绕开它，必须避开</strong>：每个冷却场独立的供液口与排汽口——改成共用总管 + 场内串联即可。 <strong>真正的空白</strong>：冷却场数量与压降、换热能力之间的定量关系没有给出。</p>
+<hr>
+<h2>附录 A · 数值与标号出处</h2>
+<table><thead><tr><th>数值 / 标号</th><th>表述</th><th>原文位置</th></tr></thead><tbody><tr><td>0.4–8 mm</td><td>反应通道高度</td><td>权项 3</td></tr><tr><td>0.1–5 mm</td><td>冷却层厚度</td><td>权项 3</td></tr><tr><td>小于 5%</td><td>冷却场之间流量偏差</td><td>[0011]</td></tr><tr><td>1 / 2 / 3</td><td>反应层 / 冷却层 / 分配层</td><td>权项 1</td></tr><tr><td>7 / 9</td><td>供液管线 / 排汽管线</td><td>[0007]</td></tr></tbody></table>
+<hr>
+<h2>附录 B · 配套产出</h2>
+<table><thead><tr><th>产出</th><th>说明</th></tr></thead><tbody><tr><td>01 专利解剖台</td><td>三维交互：拖动旋转、爆炸分解、剖切面</td></tr><tr><td>02 专利结构动态演算图鉴</td><td>等轴测图组，带实时读数</td></tr></tbody></table>
+</main></body></html>

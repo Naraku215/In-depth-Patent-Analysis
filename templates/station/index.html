@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>专利解剖台 · {{TITLE}}</title>
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">◈</span>
+      <div>
+        <h1>专利解剖台</h1>
+        <p>{{SUBTITLE}}</p>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="stat"><b id="statPatents">—</b><span>专利</span></div>
+      <div class="stat"><b id="statViews">—</b><span>解剖视图</span></div>
+      <div class="stat"><b id="statParts">—</b><span>部件标号</span></div>
+      <button class="btn ghost" id="btnExport">导出 SVG</button>
+      <button class="btn ghost" id="btnHelp">操作说明</button>
+    </div>
+  </header>
+
+  <div class="body">
+    <nav class="rail" id="rail"></nav>
+
+    <main class="stage">
+      <section class="meta" id="meta"></section>
+      <div class="tabs" id="tabs"></div>
+      <div class="viewport" id="viewport">
+        <div class="panel-host" id="panelHost"></div>
+        <div class="hint" id="hint">拖动旋转 · 滚轮缩放</div>
+        <div class="badge" id="viewBadge"></div>
+      </div>
+      <div class="controls" id="controls">
+        <label class="ctl">
+          <span>爆炸分解</span>
+          <input type="range" id="explode" min="0" max="100" value="0">
+          <output id="explodeVal">0%</output>
+        </label>
+        <label class="ctl">
+          <span>剖切</span>
+          <input type="checkbox" id="clipOn">
+          <input type="range" id="clipPos" min="0" max="100" value="50">
+          <select id="clipAxis">
+            <option value="z">前后剖</option>
+            <option value="x">左右剖</option>
+            <option value="y">水平剖</option>
+          </select>
+        </label>
+        <button class="btn" id="btnPlay">暂停</button>
+        <button class="btn" id="btnReset">复位视角</button>
+        <div class="legend" id="legend"></div>
+      </div>
+    </main>
+
+    <aside class="aside" id="aside">
+      <div class="aside-scroll" id="asideBody"></div>
+    </aside>
+  </div>
+</div>
+
+<div class="modal" id="helpModal">
+  <div class="modal-box">
+    <h2>操作说明</h2>
+    <ul>
+      <li><b>拖动</b> 视口 → 任意角度旋转（真实三维投影，全场同步重算）</li>
+      <li><b>滚轮</b> → 缩放</li>
+      <li><b>爆炸分解</b> 滑块 → 沿装配方向把各层/各模块拉开，观察内部</li>
+      <li><b>剖切</b> → 用可移动的剖切面切开实体；切口以橙色标出，露出内部流道</li>
+      <li><b>暂停 / 播放</b> → 冻结或恢复流场粒子、气泡、下压过程等动态过程</li>
+      <li><b>导出 SVG</b> → 把当前这一帧保存为独立的矢量 SVG 文件</li>
+      <li>左侧切换专利，顶部切换解剖视图；右侧为该视图的深度解读与部件标号表</li>
+    </ul>
+    <button class="btn" id="btnHelpClose">知道了</button>
+  </div>
+</div>
+
+<script src="js/engine.js"></script>
+<script src="js/scenes-common.js"></script>
+<script src="js/scenes.js"></script>
+<script src="js/report.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

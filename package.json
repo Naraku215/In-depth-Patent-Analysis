@@ -1,0 +1,16 @@
+{
+  "name": "patent-anatomy",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "专利解析 agent：输入一件专利（full.md + images/），输出一个 index.html，内含专利解剖台、结构动态演算图鉴、深度解析文档。",
+  "bin": { "patent": "./bin/patent.mjs" },
+  "engines": { "node": ">=20.10" },
+  "scripts": {
+    "doctor": "node bin/patent.mjs doctor",
+    "list": "node bin/patent.mjs list",
+    "check": "node bin/patent.mjs check",
+    "test": "node test/run.mjs"
+  },
+  "license": "MIT"
+}
