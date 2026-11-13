@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>(12) United States Patent Pfeifer et al.</title>
+<title>US 10,150,093 B2</title>
 <style>
 :root{--paper:#f2f2ef;--card:#fbfbfa;--text:#57575a;--strong:#18181a;--muted:#8c8c90;--rule:#dcdcd9;--code:#3a3a3e}
 *{box-sizing:border-box}
@@ -30,15 +30,19 @@ td:first-child{color:var(--strong);white-space:nowrap}
 
 <h1>US 10,150,093 B2《Microstructure reactor for carrying out exothermic heterogeneously-catalysed reactions with efficient evaporative cooling》</h1>
 <blockquote><p>权利人：INERATEC GmbH（申请人 Karlsruher Institut für Technologie）　发明人：Peter Pfeifer、Paolo Piermartini、Achim Wenka</p><p>优先权：2015-07-17 DE 10 2015 111 614　PCT：WO2017/013003（2016-07-15 申请，2017-01-26 公开）</p><p>授权：2018-12-11　IPC：B01J 19/00、B01J 19/24、F28D 21/00　权利要求 15 项</p></blockquote>
-<blockquote><p><strong>阅读约定</strong></p></blockquote>
-<p>&gt;</p>
-<blockquote><p>1. 本文出现具体数值、权项号、部件标号的地方，都可在专利原文中检索到；附录 A 列出每个数值的出处。本文用<strong>权项号</strong>与<strong>章节名</strong>（Field / Background / Summary / Detailed Description）定位原文——这份 <code>full.md</code> 没有 <code>[00xx]</code> 段落编号。</p><p>2. 标「为什么」「解读」「推断」的段落是分析，不是专利原文。</p><p>3. 配套图鉴里标「读数说明」的数字，是图中小模型的输出，不是专利值。</p><p>4. 专利没有证明的东西集中写在第 7 节，不散落在正文里替它圆。</p></blockquote>
+<blockquote><p><strong>阅读约定</strong></p><p>1. 本文出现具体数值、权项号、部件标号的地方，都可在专利原文中检索到；附录 A 列出每个数值的出处。本文用<strong>权项号</strong>与<strong>章节名</strong>（Field / Background / Summary / Detailed Description）定位原文——这份 <code>full.md</code> 没有 <code>[00xx]</code> 段落编号。</p><p>2. 标「为什么」「解读」「推断」的段落是分析，不是专利原文。</p><p>3. 配套图鉴里标「读数说明」的数字，是图中小模型的输出，不是专利值。</p><p>4. 专利没有证明的东西集中写在第 7 节，不散落在正文里替它圆。</p></blockquote>
 <hr>
 <h2>0 · 一句话结论</h2>
 <p>把冷却层切成若干彼此独立的「冷却场」，每个场单独供液、单独排汽；再用独立的分配层把「送液」和「蒸发」在空间上分开。于是整段反应拿到的都是同温新鲜冷却剂——这是它相对常规单程冷却的本质差别。</p>
 <p><strong>三个数字</strong>：</p>
 <table><thead><tr><th>指标</th><th>数值</th><th>出处</th></tr></thead><tbody><tr><td>层厚 a / b / c</td><td>0.5–10 / 0.1–5 / 1–10 mm</td><td>权项 5</td></tr><tr><td>反应通道高</td><td>0.4–8 mm</td><td>权项 9</td></tr><tr><td>供液通道水力直径</td><td>500 µm–5 mm（优选 700 µm–2 mm）</td><td>Detailed Description</td></tr></tbody></table>
 <p><strong>但是</strong>：全文没有一个实验数据——没有换热系数、没有压降、没有温度分布，也没有任何一张曲线图。它主张"等温"，但不提供等温的测量证据。</p>
+<hr>
+<h2>先搞懂这几个概念</h2>
+<p><strong>微通道反应器</strong>：通道宽度在毫米级甚至更小的反应器。通道越窄，换热面积与体积之比越大，反应热来得及被带走——这是它存在的理由。</p>
+<p><strong>蒸发冷却</strong>：让冷却剂在通道里沸腾变成蒸汽，用汽化潜热带走热量。比单纯升温的显热冷却强得多，但一旦局部蒸干，那里就失去了冷却。</p>
+<p><strong>冷却场</strong>：把冷却层切成若干互不相通的小区域，各自供液、各自排汽。本文反复出现的「场」就是它。</p>
+<p><strong>错流</strong>：反应物一个方向走，冷却剂横着穿过去，两者路径交叉而不是平行。</p>
 <hr>
 <h2>1 · 它要解决的问题</h2>
 <p>Background（Discussion of Background Information）把病根说得很具体：</p>
