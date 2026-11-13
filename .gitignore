@@ -1,3 +1,7 @@
+# 用户的专利不进仓库
+patents/*
+!patents/.gitkeep
+
 node_modules/
 .cache/
 
