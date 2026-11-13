@@ -30,15 +30,25 @@ function scanPatents() {
   for (const d of listDirs(root)) {
     const dir = join(root, d);
     const md = join(dir, "full.md");
-    if (!existsSync(md)) continue;
-    found.push({ id: patentId(d), dir, dirName: d, md, images: existsSync(join(dir, "images")) });
+    const hasImages = existsSync(join(dir, "images"));
+    if (!existsSync(md) && !hasImages) continue;
+    if (!existsSync(md)) {
+      // 有 images/ 没 full.md：目录建了但文件没放全
+      found.push({ id: patentId(d), dir, dirName: d, md, images: true, incomplete: true });
+      continue;
+    }
+    found.push({ id: patentId(d), dir, dirName: d, md, images: hasImages, incomplete: !hasImages });
   }
-  return { patents: found };
+  // 散落在 patents/ 根目录下的文件：系统不认，但要告诉用户
+  const stray = [];
+  if (existsSync(join(root, "full.md"))) stray.push("full.md");
+  if (existsSync(join(root, "images"))) stray.push("images/");
+  return { patents: found, stray };
 }
 
 /** 一次只解析一件：指定了就取指定；没指定且只有一件就取它；否则报错 */
 function pickTarget(spec) {
-  const { patents, error } = scanPatents();
+  const { patents, error, stray } = scanPatents();
   if (error) throw new Error(error);
   if (spec === "all") throw new Error("本系统一次只解析一件专利，不支持批量。请指定一个 id。");
   if (spec) {
@@ -46,9 +56,13 @@ function pickTarget(spec) {
     if (!hit) throw new Error(`找不到专利「${spec}」。可用：${patents.map((p) => p.id).join(", ") || "(空)"}`);
     return hit;
   }
-  if (patents.length === 0) throw new Error(`输入目录里没有专利：${cfg.patentsRoot}`);
+  if (patents.length === 0) {
+    let msg = `patents/ 里没有可解析的专利（每件要一个文件夹，里面放 full.md 与 images/）：${cfg.patentsRoot}`;
+    if (stray.length) msg += `\n注意：patents/ 根目录下有 ${stray.join("、")} 散落着，系统不会解析——请放进一个子文件夹，例如 patents/某专利/full.md`;
+    throw new Error(msg);
+  }
   if (patents.length > 1) {
-    throw new Error(`输入目录里有 ${patents.length} 件专利，请指定要解析哪一件：\n  ` + patents.map((p) => p.id).join("\n  "));
+    throw new Error(`patents/ 里有 ${patents.length} 件专利，请指定要解析哪一件：\n  ` + patents.map((p) => `${p.id}　(${p.dirName})`).join("\n  "));
   }
   return patents[0];
 }
@@ -135,24 +149,46 @@ function cmdDoctor() {
   rows.push({ 项: "anatomy skill", 值: cfg.skillRoot, 状态: existsSync(skillPath("kit", "iso-kit.mjs")) ? "ok" : "缺失" });
   rows.push({ 项: "capture", 值: skillPath("scripts", "capture.mjs"), 状态: existsSync(skillPath("scripts", "capture.mjs")) ? "ok" : "缺失" });
   rows.push({ 项: "lines", 值: skillPath("scripts", "lines.mjs"), 状态: existsSync(skillPath("scripts", "lines.mjs")) ? "ok" : "缺失" });
-  const { patents, error } = scanPatents();
-  rows.push({ 项: "待解析", 值: error ? "—" : `${patents.length} 件`, 状态: error ? "检查输入目录" : "ok" });
+  const { patents, error, stray } = scanPatents();
+  const usable = error ? [] : patents.filter((p) => !p.incomplete);
+  rows.push({ 项: "待解析", 值: error ? "—" : `${usable.length} 件`, 状态: error ? "检查输入目录" : usable.length ? "ok" : "空" });
   console.log(table(rows, ["项", "值", "状态"]));
-  if (!error && patents.length > 1) warn(`输入目录有 ${patents.length} 件。一次只解析一件，命令里要带 id。`);
+  if (!error && stray.length) warn(`patents/ 根目录下有 ${stray.join("、")} 散落着——每件专利要放进一个子文件夹`);
+  if (!error && patents.some((p) => p.incomplete)) warn("有目录缺 full.md 或 images/");
+  if (!error && usable.length > 1) info(`共 ${usable.length} 件。解析时指定 id，一次一件。`);
   return error ? 1 : 0;
 }
 
 function cmdList() {
-  const { patents, error } = scanPatents();
+  const { patents, error, stray } = scanPatents();
   if (error) return fail(error);
-  if (!patents.length) return fail(`输入目录里没有专利：${cfg.patentsRoot}`);
+  if (!patents.length) {
+    fail(`patents/ 里没有可解析的专利。${cfg.patentsRoot}`);
+    console.log("\n每件专利要一个文件夹，里面放两样：");
+    console.log("  patents/你的专利名/full.md");
+    console.log("  patents/你的专利名/images/");
+    if (stray.length) {
+      console.log(`\n注意：patents/ 根目录下有 ${stray.join("、")} 散落着，系统不解析。`);
+      console.log("请放进一个子文件夹，例如：patents/你的专利名/full.md");
+    }
+    return 1;
+  }
   console.log(table(patents.map((p) => {
     const s = getState(p.id).stages || {};
     return {
-      id: p.id, 目录: p.dirName, images: p.images ? "✓" : "—",
-      抽取: s.extracted ? "✓" : "·", 产出: s.built ? "✓" : "·", 交付: s.packaged ? "✓" : "·",
+      id: p.id,
+      目录: p.dirName,
+      原文: p.incomplete ? "缺文件" : "✓",
+      images: p.images ? "✓" : "缺",
+      抽取: s.extracted ? "✓" : "·",
+      产出: s.built ? "✓" : "·",
+      交付: s.packaged ? "✓" : "·",
     };
-  }), ["id", "目录", "images", "抽取", "产出", "交付"]));
+  }), ["id", "目录", "原文", "images", "抽取", "产出", "交付"]));
+  const bad = patents.filter((p) => p.incomplete);
+  if (bad.length) warn(`${bad.length} 件缺 full.md 或 images/，先补齐再解析`);
+  if (stray.length) warn(`patents/ 根目录下有 ${stray.join("、")} 散落着，未计入——要放进子文件夹`);
+  if (patents.length > 1) info(`共 ${patents.length} 件。解析时指定 id：node bin/patent.mjs extract <id>`);
   return 0;
 }
 

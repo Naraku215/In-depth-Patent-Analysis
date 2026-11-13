@@ -75,8 +75,6 @@ patents/
 ```
 AGENTS.md          agent 作业手册（读这个就知道怎么干活）
 README.md          本文件
-patents/           放专利（full.md + images/）
-out/  work/        交付 / 中间产物（gitignored）
 bin/patent.mjs     命令行
 lib/               解析 / 校验 / 渲染 / 打包
 prompts/           图鉴、解剖台的画法
@@ -84,7 +82,13 @@ templates/         解剖台站点、图脚本、文档骨架
 skills/anatomy/    vendored anatomy 制图技能（MIT）
 examples/          一件真实专利的完整样例（输入 + 产出）
 test/run.mjs       自检
+
+patents/<专利号>/   ← 输入：一件一个文件夹，里面 full.md + images/
+work/<id>/          ← 加工车间：facts.json、图脚本、站点、doc.md、notes.md
+out/<id>/           ← 成品：index.html + 三部分（这一个文件夹可整个发人）
 ```
+
+`work/` 和 `out/` 都在 `.gitignore` 里。`work/` 是给 agent 干活用的，删掉可以重建；`out/` 是成品，可以整个文件夹拷走。
 
 ---
 
