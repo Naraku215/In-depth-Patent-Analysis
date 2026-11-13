@@ -191,10 +191,29 @@ function cmdExtract(spec) {
   const p = pickTarget(spec);
   ensureDir(workDir(p.id));
   const facts = parseCorpus(read(p.md), { id: p.id });
+
+  // 附图文件清单：把 images/ 里的图挂到 facts 上，让 agent 知道要逐张打开哪几张
+  facts.images = [];
+  const imgDir = join(p.dir, "images");
+  if (existsSync(imgDir)) {
+    const figOf = new Map();
+    for (const f of facts.figures || []) for (const src of f.images || []) figOf.set(src.replace(/^images\//, ""), f.n);
+    for (const name of readdirSync(imgDir)) {
+      if (!/\.(png|jpe?g|webp|gif|tif?f|bmp)$/i.test(name)) continue;
+      let bytes = 0;
+      try { bytes = statSync(join(imgDir, name)).size; } catch {}
+      facts.images.push({ file: `images/${name}`, fig: figOf.get(name) || null, bytes });
+    }
+    if (!facts.images.length) facts.warnings.push("images/ 目录是空的：图鉴与解剖台只能依据文字");
+  } else {
+    facts.warnings.push("没有 images/ 目录：图鉴与解剖台只能依据文字");
+  }
+
   writeJson(join(workDir(p.id), "facts.json"), facts);
   setStage(p.id, "extracted", { at: new Date().toISOString(), chars: facts.stats.chars });
-  ok(`${p.id}：段落 ${facts.paragraphs.length} · 权项 ${facts.claims.length} · 标号 ${facts.numerals.length} · 附图 ${facts.figures.length} · 数字 ${facts.numbers.length}`);
+  ok(`${p.id}：段落 ${facts.paragraphs.length} · 权项 ${facts.claims.length} · 标号 ${facts.numerals.length} · 附图 ${facts.figures.length} · 图片 ${facts.images.length} · 数字 ${facts.numbers.length}`);
   for (const w of facts.warnings) warn("  " + w);
+  if (facts.images.length) info(`  图片：${facts.images.map((i) => i.file.split("/").pop()).join(", ")}`);
   return 0;
 }
 
@@ -204,11 +223,21 @@ function cmdFacts(spec) {
   if (!f) return fail("尚未抽取，先运行：patent extract");
   console.log(`标题：${f.title}`);
   console.log(`语种：${f.languages.join(" / ")}　字数：${f.stats.chars}`);
-  console.log(`段落 ${f.paragraphs.length}　权项 ${f.claims.length}　标号 ${f.numerals.length}　附图 ${f.figures.length}`);
+  console.log(`段落 ${f.paragraphs.length}　权项 ${f.claims.length}　标号 ${f.numerals.length}　附图 ${f.figures.length}　图片 ${(f.images || []).length}`);
   console.log("\n权利要求（前 3 条）：");
   for (const c of f.claims.slice(0, 3)) console.log(`  ${c.n}. ${c.text.slice(0, 150)}${c.text.length > 150 ? "…" : ""}`);
   console.log("\n标号表（前 20 个）：");
   for (const n of f.numerals.slice(0, 20)) console.log(`  ${n.num.padEnd(4)} ${n.label.slice(0, 56)}`);
+
+  if ((f.images || []).length) {
+    console.log("\n附图文件（逐张打开看，图里有文字没写的东西）：");
+    for (const im of f.images) {
+      console.log(`  ${(im.fig || "—").padEnd(6)} ${im.file.replace(/^images\//, "")}  ${(im.bytes / 1024).toFixed(0)} KB`);
+    }
+    console.log(`  → 打开目录：${p.dir}/images/`);
+  } else {
+    console.log("\n注意：没有找到附图文件，图鉴与解剖台只能依据文字——细节密度会明显下降。");
+  }
   return 0;
 }
 
