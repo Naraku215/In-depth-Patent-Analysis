@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>专利解剖台 · 一种带分区冷却的微通道反应器</title>
+<title>专利解剖台 · (12) United States Patent Pfeifer et al.</title>
 <style>
 /* ============================================================
    app.css — 专利解剖台
@@ -265,7 +265,7 @@ select {
       <span class="brand-mark">◈</span>
       <div>
         <h1>专利解剖台</h1>
-        <p>一种带分区冷却的微通道反应器</p>
+        <p>(12) United States Patent Pfeifer et al.</p>
       </div>
     </div>
     <div class="topbar-right">
@@ -1233,21 +1233,7 @@ select {
 <script>
 /* ===== js/scenes.js ===== */
 /* ============================================================
-   scenes.js — 每个专利的解剖视图（模板）
-   ------------------------------------------------------------
-   这是解剖台的"几何层"。每个视图是一个 build() 函数（**不带参数**），
-   函数里自己 new 一个 Builder，画完 return makeScene(b)。
-
-     const b = new A.Builder();
-     b.group(name, {explode:[dx,dy,dz]})   注册一个可爆炸的组
-     b.box(x0,x1,y0,y1,z0,z1, style, group) 轴对齐实体
-     b.line([p...], {stroke,sw,alpha,dash}, group) 折线
-     b.tube([p...], r, style, group, seg)   管线
-     b.flow([p...], {count,speed,size,color,group}) 流动粒子
-     b.label([x,y,z], '文字', {color,dx,dy,anchor,group})
-     return makeScene(b, {view:{}, tick:function(t){...}})
-
-   坐标：+x 向右、+y 向里（深度）、+z 向上。1 单位 ≈ 1 mm，按需缩放。
+   scenes-a.js — 专利一（US 10,150,093 B2）与 专利二（US 2026/0077327 A1）
    ============================================================ */
 (function (g) {
   'use strict';
@@ -1257,53 +1243,237 @@ select {
   function makeScene(b, opt) {
     opt = opt || {};
     return {
-      items: b.items,
-      groups: b.groups,
-      labels: b.labels,
-      flows: b.flows,
+      items: b.items, groups: b.groups, labels: b.labels, flows: b.flows,
       bounds: b.finish(),
-      view: opt.view || {},
-      tick: opt.tick || null
+      view: opt.view || {}, tick: opt.tick || null
     };
   }
 
-  /* ------------------------------------------------------------
-     示例视图：底座 + 可爆炸拉开的部件 + 一条流向
-     正式解析时整段替换成专利的真实结构。
-     ------------------------------------------------------------ */
-  function demoView() {
-    const b = new A.Builder();
-    b.group('base', { explode: [0, 0, 0] });
-    b.group('core', { explode: [0, 16, 0] });
+  /* ============================================================
+     专利一 · US 10,150,093 B2
+     ============================================================ */
+  const X0 = -32, X1 = 32, Z0 = -30, Z1 = 30;
+  const P1_LAYERS = [
+    { g: 'L1', y0: 0, y1: 8, kind: 'react' },
+    { g: 'L2', y0: 8, y1: 11, kind: 'cool' },
+    { g: 'L3', y0: 11, y1: 19, kind: 'dist' },
+    { g: 'L4', y0: 19, y1: 27, kind: 'dist' },
+    { g: 'L5', y0: 27, y1: 30, kind: 'cool' },
+    { g: 'L6', y0: 30, y1: 38, kind: 'react' }
+  ];
+  const P1_FIELDS = [
+    { x: -15, z: -14 }, { x: 15, z: -14 }, { x: -15, z: 14 }, { x: 15, z: 14 }
+  ];
+  const P1_MAIN = P1_FIELDS[1];
+  const PETAL = [12.2, 2.4, 8, 3.6];
 
-    // 底座
-    b.box(-40, 40, -24, 24, -6, 0, s(C.steelDk), 'base');
-    // 核心部件（外壳 + 内腔）
-    b.box(-28, 28, -16, 16, 4, 14, glass(C.steelLt, 0.35), 'core');
-    b.box(-24, 24, -12, 12, 6, 12, glass(C.cyanLt, 0.18), 'core');
-
-    // 流向：从左侧进、右侧出（折线端点落在部件边界上，不留悬空线头）
-    b.flow([P(-46, 0, 6), P(-28, 0, 9), P(28, 0, 9), P(46, 0, 6)],
-      { count: 12, speed: 0.3, size: 2.2, color: C.amber, group: 'core' });
-
-    b.label([0, 0, 22], '① 核心部件（可拆）', { color: C.steelLt, group: 'core' });
-    b.label([0, 0, -12], '② 底座', { color: C.steel, group: 'base' });
-
-    return makeScene(b, {
-      view: { yaw: -0.62, pitch: 0.52, zoom: 0.82 },
-      tick: function (t) { /* 每帧回调：在这里改动态件 */ }
+  function p1Groups(b, spread) {
+    P1_LAYERS.forEach(function (L, i) {
+      b.group(L.g, { explode: [0, (i - 2.5) * spread, 0] });
     });
   }
 
-  /* ---------------- 注册 ---------------- */
+  function p1CoolLayer(b, y0, y1, group) {
+    b.box(X0, X1, y0, y1, Z0, Z1, glass(C.cyanLt, 0.13), group);
+    const y = (y0 + y1) / 2;
+    P1_FIELDS.forEach(function (f) {
+      b.line(A.petalPath(f.x, f.z, y, PETAL[0], PETAL[1], PETAL[2], PETAL[3]),
+        { stroke: C.cyanLt, sw: 1.1, alpha: 0.9 }, group);
+      b.line([P(f.x - 13.2, y, f.z - 13.2), P(f.x + 13.2, y, f.z - 13.2),
+      P(f.x + 13.2, y, f.z + 13.2), P(f.x - 13.2, y, f.z + 13.2), P(f.x - 13.2, y, f.z - 13.2)],
+        { stroke: C.cyanDeep, sw: 0.7, alpha: 0.5, dash: '3 3' }, group);
+    });
+  }
+
+  function p1DistLayer(b, y0, y1, group) {
+    b.box(X0, X1, y0, y1, Z0, Z1, glass(C.steelLt, 0.08), group);
+    const y = (y0 + y1) / 2;
+    b.tube([P(X0 + 2, y, Z0 + 3), P(X0 + 2, y, Z1 - 3)], 1.5, s(C.cyan), group, 5);
+    b.tube([P(X1 - 2, y, Z0 + 3), P(X1 - 2, y, Z1 - 3)], 1.5, s(C.steam), group, 5);
+    P1_FIELDS.forEach(function (f) {
+      b.tube([P(X0 + 2, y, f.z - 9.5), P(f.x, y, f.z - 9.5), P(f.x, y, f.z - 5.2)], 0.95, s(C.cyan), group, 4);
+      b.tube([P(f.x, y, f.z + 5.2), P(f.x, y, f.z + 9.5), P(X1 - 2, y, f.z + 9.5)], 0.95, s(C.steam), group, 4);
+    });
+  }
+
+  function p1ReactLayer(b, y0, y1, group, withFlows) {
+    const geo = A.reactionLayer(b, { x0: X0, x1: X1, z0: Z0, z1: Z1, y0: y0, y1: y1, n: 7, group: group });
+    if (withFlows) {
+      const y = (y0 + y1) / 2 + 0.4;
+      A.channelCenters(geo, 7, y, Z0 + 1, Z1 - 1).forEach(function (p) {
+        b.flow(p, { count: 3, speed: 0.30, size: 2.3, color: C.amberHot, color2: C.violet, opacity: 0.95 });
+      });
+    }
+    return geo;
+  }
+
+  function p1FieldPath(f, y) {
+    const pts = [];
+    pts.push(P(X0 + 1, y, f.z - 9.5));
+    pts.push(P(f.x, y, f.z - 9.5));
+    pts.push(P(f.x, y, f.z - 5.2));
+    A.petalPath(f.x, f.z, y, PETAL[0], PETAL[1], PETAL[2], PETAL[3]).forEach(function (p) { pts.push(p); });
+    pts.push(P(f.x, y, f.z + 5.2));
+    pts.push(P(f.x, y, f.z + 9.5));
+    pts.push(P(X1 - 1, y, f.z + 9.5));
+    return pts;
+  }
+
+  /* ---- 视图 1：叠层解剖 ---- */
+  function p1Stack() {
+    const b = new A.Builder();
+    p1Groups(b, 24);
+    P1_LAYERS.forEach(function (L) {
+      if (L.kind === 'react') p1ReactLayer(b, L.y0, L.y1, L.g, true);
+      else if (L.kind === 'cool') p1CoolLayer(b, L.y0, L.y1, L.g);
+      else p1DistLayer(b, L.y0, L.y1, L.g);
+    });
+    P1_FIELDS.forEach(function (f) {
+      b.flow(p1FieldPath(f, 9.5), { count: 12, speed: 0.11, size: 2.5, color: C.cyan, color2: C.steam, opacity: 0.95, group: 'L2' });
+      b.flow(p1FieldPath(f, 28.5), { count: 12, speed: 0.11, size: 2.5, color: C.cyan, color2: C.steam, opacity: 0.95, group: 'L5' });
+    });
+    b.label([X1, 37, Z1], '1 反应层 a)', { color: C.amberHot, group: 'L6', dx: 18 });
+    b.label([X1, 29, Z1], '2 冷却层 b)', { color: C.cyanLt, group: 'L5', dx: 18 });
+    b.label([X1, 25, Z1], '3 分配层 c)', { color: C.steelLt, group: 'L4', dx: 18 });
+    b.label([X1, 15, Z1], '3′ 镜像', { color: C.steelLt, group: 'L3', dx: 18 });
+    b.label([X1, 4, Z1], '1′–3′ 镜像序列', { color: C.steelLt, group: 'L1', dx: 18 });
+    b.label([X0, 37, Z0], '冷却剂 4 → 蒸汽 5', { color: C.cyan, group: 'L6', dx: -18, anchor: 'end' });
+    return makeScene(b, { view: { yaw: -0.70, pitch: 0.30, zoom: 1.0, explode: 0.55 } });
+  }
+
+  /* ---- 视图 2：冷却场花瓣流道 ---- */
+  function p1Field() {
+    const b = new A.Builder();
+    b.group('plate', {});
+    b.group('walls', { explode: [0, 15, 0] });
+    b.box(X0, X1, 18, 26, Z0, Z1, glass(C.steel, 0.15), 'walls');
+    b.box(X0, X1, 8, 11, Z0, Z1, glass(C.cyanLt, 0.10), 'plate');
+    const y = 9.6;
+    P1_FIELDS.forEach(function (f, i) {
+      const isMain = i === 1;
+      b.line(A.petalPath(f.x, f.z, y, PETAL[0], PETAL[1], PETAL[2], PETAL[3]),
+        { stroke: isMain ? C.steam : C.cyanLt, sw: isMain ? 2.0 : 1.0, alpha: isMain ? 1 : 0.4 }, 'plate');
+      b.line([P(f.x - 13.2, y, f.z - 13.2), P(f.x + 13.2, y, f.z - 13.2),
+      P(f.x + 13.2, y, f.z + 13.2), P(f.x - 13.2, y, f.z + 13.2), P(f.x - 13.2, y, f.z - 13.2)],
+        { stroke: isMain ? C.cyan : C.steelDk, sw: isMain ? 1.2 : 0.6, alpha: isMain ? 1 : 0.4 }, 'plate');
+      b.flow(p1FieldPath(f, y), {
+        count: isMain ? 20 : 7, speed: 0.13, size: isMain ? 3.2 : 2.0,
+        color: C.cyan, color2: C.steam, opacity: isMain ? 1 : 0.32, group: 'plate'
+      });
+    });
+    b.label([P1_MAIN.x, 12.4, P1_MAIN.z], '6 冷却场：每个场独立供液，场内有折弯', { color: C.cyanLt, dx: 0, dy: -96, anchor: 'middle' });
+    b.label([X0 + 1, y, P1_MAIN.z - 9.5], '7 供液', { color: C.cyan, dx: -12, dy: -6, anchor: 'end' });
+    b.label([X1 - 1, y, P1_MAIN.z + 9.5], '9 排汽', { color: C.steam, dx: 12, dy: -6 });
+    b.label([0, 26, Z0], '11 反应介质纵向 / 12 冷却剂横向（错流）', { color: C.violet, dx: 0, dy: -16, anchor: 'middle', group: 'walls' });
+    return makeScene(b, { view: { yaw: -0.58, pitch: 0.50, zoom: 1.0, explode: 0.6 } });
+  }
+
+  /* ---- 视图 3：分配器错流 ---- */
+  function p1Dist() {
+    const b = new A.Builder();
+    b.group('dist', {});
+    b.group('cool', { explode: [0, 13, 0] });
+    b.group('react', { explode: [0, 27, 0] });
+    p1DistLayer(b, 0, 8, 'dist');
+    p1CoolLayer(b, 9, 12, 'cool');
+    p1ReactLayer(b, 14, 22, 'react', false);
+    for (let i = 0; i < 5; i++) {
+      A.arrowDown(b, -24 + i * 12, Z1 + 9, 33, 8, 5.0, C.amber, 'react');
+    }
+    b.flow([P(X0 + 2, 4, Z0), P(X0 + 2, 4, Z1)], { count: 5, speed: 0.13, size: 3, color: C.cyan, group: 'dist' });
+    b.flow([P(X1 - 2, 4, Z1), P(X1 - 2, 4, Z0)], { count: 5, speed: 0.13, size: 3, color: C.steam, group: 'dist' });
+    P1_FIELDS.forEach(function (f) {
+      b.flow(p1FieldPath(f, 10.5), { count: 8, speed: 0.12, size: 2.5, color: C.cyan, color2: C.steam, group: 'cool' });
+    });
+    b.label([X0 + 2, 4, Z0], '7 冷却剂（横向）', { color: C.cyan, dx: -10, anchor: 'end' });
+    b.label([X1 - 2, 4, Z0], '9 蒸汽（横向）', { color: C.steam, dx: 10 });
+    b.label([0, 4, Z0], '供液与排汽在分配层交错布置 → 间距最大化，热短路最小', { color: C.steelLt, dx: 0, dy: 26, anchor: 'middle' });
+    b.label([0, 33, Z1 + 9], '反应介质 13（纵向 11）', { color: C.amberHot, dx: 0, dy: -16, anchor: 'middle', group: 'react' });
+    return makeScene(b, { view: { yaw: -0.26, pitch: 0.66, zoom: 1.0, explode: 0.55 } });
+  }
+
+  /* ---- 视图 4：局部蒸干 / 气泡阻塞 ---- */
+  function p1Evap() {
+    const b = new A.Builder();
+    b.group('wall', {});
+    b.group('fluid', {});
+    const x0 = -30, x1 = 30, z0 = -12, z1 = 12;
+    b.box(x0, x1, 10, 12.5, z0, z1, s(C.amber), 'wall');
+    for (let i = 0; i < 7; i++) {
+      const cz = z0 + 3 + i * 2.6;
+      b.box(x0 + 2, x1 - 2, 12.5, 16, cz - 0.7, cz + 0.7, { fill: C.catalyst, alpha: 0.65, stroke: null }, 'wall');
+    }
+    b.box(x0, x1, 0, 10, z0, z1, glass(C.cyanLt, 0.07), 'fluid');
+    b.box(x0 + 1, x1 - 1, 0.4, 2.6, z0 + 1, z1 - 1, { fill: C.water, alpha: 0.5, stroke: null }, 'fluid');
+    b.box(6, 26, 0.4, 9.4, z0 + 1, z1 - 1, { fill: C.steam, alpha: 0.11, stroke: null }, 'fluid');
+    b.box(6, 26, 10.02, 12.52, z0 + 0.2, z1 - 0.2, { fill: C.red, alpha: 0.45, sw: 0, stroke: null }, 'wall');
+    for (let i = 0; i < 15; i++) {
+      const bx = -27 + i * 3.6;
+      const zz = -7 + (i % 3) * 6;
+      b.flow([P(bx, 0.9, zz), P(bx + (i % 2 ? 1.0 : -1.0), 5.4, zz), P(bx, 9.0, zz)],
+        {
+          count: 2, speed: 0.15 + 0.03 * (i % 4), size: 2.0, color: C.steam, opacity: 0.8, group: 'fluid',
+          sizeFn: function (u) { return 1.3 + 2.4 * u; }
+        });
+    }
+    b.label([0, 16.8, 0], '反应壁：气泡覆盖区 → 局部过热', { color: C.red, anchor: 'middle', dx: 0, dy: -10, group: 'wall' });
+    b.label([26, 7, z1], '干涸区：传热系数骤降', { color: C.steam, dx: 14, dy: -12, group: 'fluid' });
+    b.label([-27, 1.6, z1], '液膜（未蒸干段）', { color: C.water, dx: 10, dy: 16, group: 'fluid' });
+    b.label([x0, 11.2, z0], '层 a) 反应侧', { color: C.amber, dx: -10, dy: -10, anchor: 'end', group: 'wall' });
+    return makeScene(b, { view: { yaw: -0.18, pitch: 0.28, zoom: 1.05 } });
+  }
+
+  /* ---- 面板：等温性对比 ---- */
+  function p1StatePanel() {
+    const W = 760, H = 430;
+    const L = 78, R = 726, T = 44, Bm = 330;
+    const x = t => L + (R - L) * t;
+    const Y = v => Bm - (v - 185) / 105 * (Bm - T);
+    const yPrior = t => Y(200 + 64 * t);
+    const yInv = t => Y(212 + 1.5 * Math.sin(t * 6.4));
+    let p1 = '', p2 = '';
+    for (let i = 0; i <= 80; i++) {
+      const t = i / 80;
+      p1 += (i ? 'L' : 'M') + x(t).toFixed(1) + ',' + yPrior(t).toFixed(1);
+      p2 += (i ? 'L' : 'M') + x(t).toFixed(1) + ',' + yInv(t).toFixed(1);
+    }
+    let grid = '';
+    for (let v = 185; v <= 290; v += 15) {
+      grid += `<line x1="${L}" y1="${Y(v).toFixed(1)}" x2="${R}" y2="${Y(v).toFixed(1)}" stroke="#1b2839" stroke-width="1"/>`;
+      grid += `<text x="${L - 10}" y="${(Y(v) + 4).toFixed(1)}" fill="#5b6b80" font-size="11" text-anchor="end" font-family="ui-monospace,monospace">${v}</text>`;
+    }
+    let marks = '';
+    for (let i = 0; i <= 10; i++) {
+      const t = i / 10;
+      marks += `<text x="${x(t).toFixed(1)}" y="${Bm + 22}" fill="#5b6b80" font-size="11" text-anchor="middle" font-family="ui-monospace,monospace">${i * 10}%</text>`;
+      marks += `<line x1="${x(t).toFixed(1)}" y1="${Bm}" x2="${x(t).toFixed(1)}" y2="${Bm + 5}" stroke="#334155"/>`;
+    }
+    const gy = Y(248);
+    return `<svg viewBox="0 0 ${W} ${H}" class="panel-svg" preserveAspectRatio="xMidYMid meet">
+      <rect x="${L}" y="${gy.toFixed(1)}" width="${R - L}" height="${(Bm - gy).toFixed(1)}" fill="#7f1d1d" opacity="0.22"/>
+      ${grid}
+      <text x="${R - 6}" y="${(gy - 8).toFixed(1)}" fill="#fca5a5" font-size="11" text-anchor="end" font-family="ui-monospace,monospace">催化剂失活 / 甲烷选择性失控区</text>
+      <line x1="${L}" y1="${Bm}" x2="${R}" y2="${Bm}" stroke="#334155"/>
+      <line x1="${L}" y1="${T}" x2="${L}" y2="${Bm}" stroke="#334155"/>
+      ${marks}
+      <path d="${p1}" fill="none" stroke="#f87171" stroke-width="2.8"/>
+      <path d="${p2}" fill="none" stroke="#38e0b0" stroke-width="2.8"/>
+      <text x="${x(0.55).toFixed(1)}" y="${(yPrior(0.55) - 14).toFixed(1)}" fill="#f87171" font-size="12.5" font-family="ui-monospace,monospace">传统单程冷却：沿程升温 ≈ 64℃</text>
+      <text x="${x(0.06).toFixed(1)}" y="${(yInv(0.06) - 16).toFixed(1)}" fill="#38e0b0" font-size="12.5" font-family="ui-monospace,monospace">本发明逐场独立供液：ΔT ≈ ±1.5℃</text>
+      <text x="${(L + R) / 2}" y="${Bm + 54}" fill="#94a3b8" font-size="12" text-anchor="middle" font-family="ui-monospace,monospace">沿反应通道的相对位置 →</text>
+      <text x="20" y="${(T + Bm) / 2}" fill="#94a3b8" font-size="12" text-anchor="middle" font-family="ui-monospace,monospace" transform="rotate(-90 20 ${(T + Bm) / 2})">反应通道温度 ℃</text>
+    </svg>`;
+  }
+
   A.scenes.p1 = {
-    id: 'p1',
-    code: 'DEMO-0001',
-    short: '一种带分区冷却的微通道反应器',
-    patentee: '—',
-    tag: '—',
+    id: 'p1', code: 'US 10,150,093 B2', short: '微结构反应器 · 蒸发冷却',
+    patentee: 'INERATEC / KIT · 2018 授权', tag: '装置',
     views: [
-      { id: 'demo', label: '结构总览', build: demoView }
+      { id: 'stack', label: '叠层解剖', build: p1Stack },
+      { id: 'field', label: '冷却场流道', build: p1Field },
+      { id: 'dist', label: '分配器错流', build: p1Dist },
+      { id: 'evap', label: '局部蒸干', build: p1Evap },
+      { id: 'state', label: '等温性对比', panel: p1StatePanel }
     ]
   };
 })(window);
@@ -1312,7 +1482,7 @@ select {
 <script>
 /* ===== js/report.js ===== */
 /* ============================================================
-   report.js — DEMO-0001「一种带分区冷却的微通道反应器」
+   report.js — US 10,150,093 B2「微结构反应器 · 蒸发冷却」
    ============================================================ */
 (function (g) {
   'use strict';
@@ -1320,35 +1490,111 @@ select {
 
   A.patents = {
     p1: {
-      title: '分区冷却的微通道反应器',
-      abstract: '把冷却层拆成若干彼此独立的冷却场，每场单独供液、单独排汽，解决常规单程冷却「沿程升温、出口端冷却能力下降」的问题。',
-      facts: [
-        ['类型', '演示专利（虚构）'],
-        ['权项', '3 项'],
-        ['反应通道高', '0.4–8 mm'],
-        ['冷却层厚', '0.1–5 mm']
-      ],
-      claim: '权项 1 的三层叠合（反应层 / 冷却层 / 分配层）里，真正的限定是「每个冷却场具有单独的供液口与排汽口」。少了这一条，就退回常规单程冷却。'
+      title: '微结构反应器：以分区冷却场实现蒸发冷却的等温运行',
+      abstract: '一件用「三层一组的镜像堆叠」把冷却剂分配与蒸发解耦的反应器专利。把冷却层拆成若干个独立供液的「冷却场」，每个场只跟自己的供液管和排汽管相连，于是整段反应都拿到同温的新鲜冷却剂——这是它相对常规单程冷却的本质差别。',
+      facts: [['优先权', '2015-07-17 DE'], ['授权', '2018-12-11'], ['权项', '15 项'], ['层厚 a/b/c', '0.5–10 / 0.1–5 / 1–10 mm'], ['反应通道高', '0.4–8 mm']],
+      claim: '权项 1 必须同时具备 (a) 含催化剂层、(b) 被分成两个以上冷却场的层、(c) 含冷却剂分配管线与接头的分配层。第 (c) 层是它区别于「反应层 + 冷却层」两层结构的要害：正是第三层让供液/排汽与蒸发在空间上分开。'
     }
   };
 
   A.notes = {
-    'p1:demo': {
-      key: '结构总览',
-      title: '三层叠合与单进单出',
+    'p1:stack': {
+      key: '<b>一句话：</b>把「反应层 / 冷却层 / 分配层」写成权利要求的一个三元组，并用镜像堆叠把整套结构复制成任意厚度的板束。第三层不是附件，而是让蒸发冷却成立的前提。',
+      title: '叠层解剖：三层一组，镜像复制',
       body: [
-        '从下往上依次是分配层、冷却层、反应层。冷却层被分成两个以上的冷却场，每个场只跟自己的供液管和排汽管相连。',
-        '这样一来，冷却剂在任何一个场里都只走一小段，不会沿整段反应累积升温——这正是权项 1 与常规单侧冷却层的分野。'
+        '从上往下看这一叠：<b>1 反应层（a）</b>里是装催化剂的反应通道，放出的热量要穿过的第一道界面；<b>2 冷却层（b）</b>里是分成若干「冷却场」的蒸发腔；<b>3 分配层（c）</b>里没有反应、也没有蒸发，只有把液态冷却剂送到每个场、再把蒸汽收回来的管线。',
+        '为什么非要第三层？因为如果供液管和蒸发腔同层，冷却剂一进入就在管口附近开始沸腾，蒸汽体积膨胀会把液体挤开，后面的场拿不到液——这正是说明书里描述的老问题。把「输送」和「相变」分到不同平面后，层 b 的热流就与冷却剂的入口温度解耦，整段反应可以在冷却剂远低于沸点时进入时仍保持近似等温。',
+        '镜像堆叠（权项 3）不是审美选择：一个 (a-b-c) 单元只有一面能贴反应层，镜像后 (a-b-c-c-b-a) 让每个冷却层两侧都是反应层，热流对称、机械应力对称，板束才不会因为单面受热而弓曲。'
+      ],
+      steps: [
+        '沿着竖直方向拉开滑块：六层会各走各的，看清 a/b/c 的重复关系。',
+        '注意两层 c 是背靠背的——它们共用同一套供液与排汽路径。',
+        '打开剖切，把视角切到中间，能看到反应通道与冷却场是一一对应的。'
       ],
       parts: [
-        ['1', '反应层（含催化剂，反应通道高 0.4–8 mm）'],
-        ['2', '冷却层 / 冷却场（厚 0.1–5 mm）'],
-        ['3', '分配层（含供液与排汽管线）'],
-        ['7', '供液管线（水力直径沿流向递减）'],
-        ['9', '排汽管线（水力直径沿流向递增）']
+        ['1', '层 a)：含催化剂的反应层，通道高 0.4–8 mm'],
+        ['2', '层 b)：被分成两个以上冷却场的层，厚 0.1–5 mm'],
+        ['3', '层 c)：冷却剂分配层，含分配管线与接头'],
+        ['4', '冷却剂（水）'],
+        ['5', '加热后的冷却剂（蒸汽）'],
+        ['6', '冷却场（单个独立供液单元）'],
+        ['7', '冷却剂进口'],
+        ['9', '蒸汽出口'],
+        ['11', '反应介质纵向路径'],
+        ['12', '冷却剂横向路径（与反应流错流）']
       ],
-      tags: ['三层叠合', '单进单出', '环状流道']
-    }
+      tags: ['独立权项 1 的三元组', '镜像堆叠', '热流解耦']
+    },
+    'p1:field': {
+      key: '<b>一句话：</b>每个冷却场是一条从中心向外辐射、末端折返的连续蛇形流道，进出各一个口。折弯不是为了好看——它让重力对流量的影响变得很小，并避免液滴被夹带出去（说明书原文）。',
+      title: '冷却场：花瓣形流道与单进单出',
+      body: [
+        '把冷却层单独抬起来看，四个方形场各占一角。每个场内部是放射状的「花瓣」形回流单元（附图中约八个）：从中心汇流点出发沿径向走一段，末端半圆折返，再沿相邻通道回到中心，如此绕一圈。说明书用「环状和/或波状」描述它。',
+        '关键细节是<b>每个场只有一个进口和一个出口</b>（权项 13）。这带来两个直接后果：其一，场与场之间在流体上完全并联，任何一场的流量只由它自身的压降决定；其二，只要场的压降远大于分配管的压降，各场就自动等流量——这是权项 10–12 那个「供液管径沿流向递减、排汽管径沿流向递增」设计的物理前提。',
+        '流道内的折弯还有第二个作用：蒸发时汽液两相流在竖直通道里容易被重力分层、出现液滴夹带，折弯把流程强制转成水平-竖直交替，重力的方向性被抹平。'
+      ],
+      steps: [
+        '观察粒子从蓝色（冷液）逐渐变白（蒸汽）的过程——它在一个场里完成了从液相到汽相的全程。',
+        '把另外三个场的粒子调暗，你会发现每个场都在做同样的事，互不干扰。'
+      ],
+      parts: [
+        ['6', '冷却场'],
+        ['7', '场供液口'],
+        ['9', '场排汽口'],
+        ['10', '分配到各场的支管'],
+        ['14', '独立补液点']
+      ],
+      tags: ['单进单出', '压降主导的等流量分配', '折弯抑制重力偏流']
+    },
+    'p1:dist': {
+      key: '<b>一句话：</b>供液线与排汽线在分配层里交错排布、彼此拉到最远。冷管与热管挨得越近，热短路越严重——这一点被明确写成了权项 10。',
+      title: '分配器：与反应流错流，供排间距最大',
+      body: [
+        '把反应层抬到最高、冷却层居中、分配层放最下面，从上方俯视，几何关系一目了然：反应介质沿纵向（图中的纵轴）穿过整台设备；冷却剂却从侧面横向进入，横穿反应流的路径，一个场一条支管。这就是权项 15 的「错流」。',
+        '横向进入的深层理由不只是换热。纵向进入意味着冷却剂要走完整个反应长度才能出去，沿程必然累积升温，最后一排场拿到的已经是热流体。横向进入让每个场从同一根冷岐管上取液，入口温度一致。',
+        '而供液岐管与排汽岐管被分别放在两侧、且每一对场支管之间都隔着一段距离（权项 10 的「最大间距」），是为了避免冷管被旁边的蒸汽管加热——那会让分配层变成一个不想要的回热器。',
+        '权项 11、12 还规定了管径的走向：供液管沿流向<b>递减</b>、排汽管沿流向<b>递增</b>。这与直觉相反，但其目的是让分配管内的压降保持在可忽略的量级，从而保证并联场之间的流量只取决于场本身。'
+      ],
+      parts: [
+        ['7', '冷却剂供液管（横向）'],
+        ['9', '蒸汽排出管（横向）'],
+        ['10', '场支管'],
+        ['11', '反应介质纵向'],
+        ['12', '冷却剂横向'],
+        ['13', '反应介质'],
+        ['14', '独立补液']
+      ],
+      tags: ['错流', '供排分离', '管径梯度']
+    },
+    'p1:evap': {
+      key: '<b>一句话：</b>蒸发冷却是把双刃剑。相变吸热让传热系数极高，但只要局部蒸干，传热系数就断崖式下跌，热点立刻出现——这件专利的全部设计都是围绕这个失效模式。',
+      title: '局部蒸干：蒸发冷却真正的敌人',
+      body: [
+        '这段剖面里，下方是冷却通道，上方是反应壁。左侧还有连续液膜，气泡在其中生成、长大、上升；右侧已经蒸干，只剩一层几乎不导热的蒸汽。',
+        '对照反应壁上的红色区域：干涸段正上方的壁温显著高于其余部分。费托反应的速率对温度是指数敏感的，一个几十度的局部热点足以让该处的甲烷选择性翻倍，并加速结焦。',
+        '更隐蔽的问题是流动失稳：某一条通道先开始蒸发，体积流量上升、压降改变，会把更多冷却剂从相邻通道「抢」过来，于是它蒸得更快、邻通道更冷——正反馈。这正是说明书里反复强调的「不均匀蒸发会沿反应通道被放大」。',
+        '把供液拆散到每个场、每场只走很短的蒸发路径，就是在物理上切断这条正反馈：一个场蒸干也影响不到别的场。'
+      ],
+      parts: [
+        ['4', '水（液膜段）'],
+        ['5', '蒸汽（干涸段）'],
+        ['6', '冷却场'],
+        ['7', '供液']
+      ],
+      tags: ['干涸 → 传热崩塌', '两相流不稳定性', '局部热点']
+    },
+    'p1:state': {
+      key: '<b>一句话：</b>传统单程冷却沿反应长度累积升温数十度；逐场供液把整段反应压在 ±1.5 ℃ 以内（模型值）。这条曲线就是这件专利全部价值的一张图。',
+      title: '等温性：一张曲线解释一切',
+      body: [
+        '红色是传统「一根管子通到底」的单程冷却：冷却剂入口 200 ℃，沿程吸收反应热，到出口已升到 264 ℃（模型值）。催化剂在前段低温、后段高温，两端的产物分布根本不是同一种产品。',
+        '绿色是本发明：每个场都拿到约 212 ℃（模型值）的新鲜冷却剂，走完一小段就排走，沿程温度纹丝不动。整套设计——三层结构、分区、错流、供排分离、管径梯度——全部服务于这一条平线。',
+        '平线带来的不只是「均匀」，而是<b>可预测</b>：在整段反应上温度给定，选择性就给定，产物分布就给定。对下游的加氢裂化、对全厂的物料平衡，这都是决定性的。',
+        '注意红色曲线穿过了 248 ℃（模型值）的失活区。在工业装置上，这意味着后段催化剂一直在加速老化——而操作者甚至不知道热点在哪里。',
+        '读数说明：这一页的温度与曲线都是按热平衡示意算出来的模型值，专利没有给任何实测温度或曲线。'
+      ],
+      tags: ['沿程温度剖面', '选择性可预测性', '失活区']
+    },
   };
 })(window);
 

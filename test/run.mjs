@@ -54,7 +54,7 @@ check("一次一件：带 all 被拒绝", () => {
 clean(join(ROOT, "work", ID));
 clean(join(ROOT, "out", ID));
 // 把示例输入放回 patents/（工作区平时是空的）
-const inputSrc = join(ROOT, "examples", "DEMO-0001-input");
+const inputSrc = join(ROOT, "test", "fixtures", "input");
 const inputDst = join(ROOT, "patents", ID);
 if (existsSync(inputSrc)) { rmSync(inputDst, { recursive: true, force: true }); copyDirSync(inputSrc, inputDst); }
 
@@ -70,7 +70,7 @@ check("init + extract：解析出权项与标号", () => {
 
 check("build：三部分都产出", () => {
   // 把示例的成稿内容铺进工作区（模拟 agent 写完这一步）
-  const A = join(ROOT, "examples", "DEMO-0001-authoring");
+  const A = join(ROOT, "test", "fixtures", "authoring");
   const W = join(ROOT, "work", ID);
   copyFileSync(join(A, "doc.md"), join(W, "doc.md"));
   copyFileSync(join(A, "fig-01.mjs"), join(W, "build", "fig-01.mjs"));

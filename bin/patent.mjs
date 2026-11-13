@@ -208,6 +208,9 @@ function cmdExtract(spec) {
   } else {
     facts.warnings.push("没有 images/ 目录：图鉴与解剖台只能依据文字");
   }
+  if (!facts.paragraphs.length) {
+    facts.warnings.push("原文没有 [00xx] 段号：文档引用请改用权项号与章节名（Background / Detailed Description）");
+  }
 
   writeJson(join(workDir(p.id), "facts.json"), facts);
   setStage(p.id, "extracted", { at: new Date().toISOString(), chars: facts.stats.chars });

@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>(12) United States Patent Pfeifer et al.</title>
+<style>
+:root{--paper:#f2f2ef;--card:#fbfbfa;--text:#57575a;--strong:#18181a;--muted:#8c8c90;--rule:#dcdcd9;--code:#3a3a3e}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--text);font-family:"Inter","Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif;font-size:15px;line-height:1.9;-webkit-font-smoothing:antialiased}
+main{max-width:780px;margin:0 auto;padding:72px 26px 120px}
+h1{font-size:31px;line-height:1.3;color:var(--strong);font-weight:600;margin:0 0 10px;letter-spacing:-.01em}
+h2{font-size:20px;color:var(--strong);font-weight:600;margin:46px 0 16px}
+h3{font-size:16.5px;color:var(--strong);font-weight:600;margin:38px 0 12px}
+h4{font-size:14px;color:var(--strong);font-weight:600;margin:26px 0 8px;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;letter-spacing:.02em}
+p{margin:0 0 14px}
+strong{color:var(--strong);font-weight:600}
+code{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:.9em;background:#e9e9e5;border-radius:3px;padding:1px 5px;color:var(--code)}
+pre{background:#e9e9e5;border-radius:8px;padding:14px 16px;overflow:auto;font-size:12.5px;line-height:1.6}
+pre code{background:none;padding:0}
+hr{border:0;border-top:1px solid var(--rule);margin:34px 0}
+blockquote{margin:0 0 20px;padding:2px 0 2px 16px;border-left:2px solid #b9b9b2}
+blockquote p{margin:0 0 6px;color:var(--muted)}
+ol,ul{margin:0 0 16px;padding-left:22px}
+li{margin:0 0 7px}
+table{width:100%;border-collapse:collapse;margin:20px 0 24px;font-size:12.5px;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+th{text-align:left;font-weight:500;color:var(--muted);padding:8px;border-bottom:1px solid #b9b9b2;white-space:nowrap}
+td{padding:8px;border-bottom:1px solid var(--rule);line-height:1.55;vertical-align:top}
+td:first-child{color:var(--strong);white-space:nowrap}
+@media(max-width:560px){main{padding:44px 16px 80px}h1{font-size:24px}h2{font-size:18px}table{font-size:11px}}
+</style></head><body><main>
+
+<h1>US 10,150,093 B2《Microstructure reactor for carrying out exothermic heterogeneously-catalysed reactions with efficient evaporative cooling》</h1>
+<blockquote><p>权利人：INERATEC GmbH（申请人 Karlsruher Institut für Technologie）　发明人：Peter Pfeifer、Paolo Piermartini、Achim Wenka</p><p>优先权：2015-07-17 DE 10 2015 111 614　PCT：WO2017/013003（2016-07-15 申请，2017-01-26 公开）</p><p>授权：2018-12-11　IPC：B01J 19/00、B01J 19/24、F28D 21/00　权利要求 15 项</p></blockquote>
+<blockquote><p><strong>阅读约定</strong></p></blockquote>
+<p>&gt;</p>
+<blockquote><p>1. 本文出现具体数值、权项号、部件标号的地方，都可在专利原文中检索到；附录 A 列出每个数值的出处。本文用<strong>权项号</strong>与<strong>章节名</strong>（Field / Background / Summary / Detailed Description）定位原文——这份 <code>full.md</code> 没有 <code>[00xx]</code> 段落编号。</p><p>2. 标「为什么」「解读」「推断」的段落是分析，不是专利原文。</p><p>3. 配套图鉴里标「读数说明」的数字，是图中小模型的输出，不是专利值。</p><p>4. 专利没有证明的东西集中写在第 7 节，不散落在正文里替它圆。</p></blockquote>
+<hr>
+<h2>0 · 一句话结论</h2>
+<p>把冷却层切成若干彼此独立的「冷却场」，每个场单独供液、单独排汽；再用独立的分配层把「送液」和「蒸发」在空间上分开。于是整段反应拿到的都是同温新鲜冷却剂——这是它相对常规单程冷却的本质差别。</p>
+<p><strong>三个数字</strong>：</p>
+<table><thead><tr><th>指标</th><th>数值</th><th>出处</th></tr></thead><tbody><tr><td>层厚 a / b / c</td><td>0.5–10 / 0.1–5 / 1–10 mm</td><td>权项 5</td></tr><tr><td>反应通道高</td><td>0.4–8 mm</td><td>权项 9</td></tr><tr><td>供液通道水力直径</td><td>500 µm–5 mm（优选 700 µm–2 mm）</td><td>Detailed Description</td></tr></tbody></table>
+<p><strong>但是</strong>：全文没有一个实验数据——没有换热系数、没有压降、没有温度分布，也没有任何一张曲线图。它主张"等温"，但不提供等温的测量证据。</p>
+<hr>
+<h2>1 · 它要解决的问题</h2>
+<p>Background（Discussion of Background Information）把病根说得很具体：</p>
+<ul><li>用不经历相变的冷却剂时，冷却剂沿程升温，越靠下游的反应通道越过热；反应速率随温度指数上升，于是"越热越产热"，冷却能力与产热能力进一步失配。</li><li>换成蒸发冷却更麻烦：反应快的地方先蒸干，该处冷却通道里只剩蒸汽，而蒸汽的质量流量与比热远低于液——那些反应通道实际上失去了冷却。</li><li>冷却层通常按面积/体积需求被放得很大，换热能力过剩，反而让局部蒸干更早发生。</li></ul>
+<p>Field of the Invention 给的定位是：一种用于放热、多相催化反应的微结构反应器。</p>
+<hr>
+<h2>2 · 结构与几何</h2>
+<p>权项 1 定义了一个"堆叠序列"，必须同时具备三层：</p>
+<table><thead><tr><th>部件</th><th>标号</th><th>规格</th><th>作用</th></tr></thead><tbody><tr><td>含催化剂的反应层</td><td>1（layer a）</td><td>厚 0.5–10 mm</td><td>反应发生处</td></tr><tr><td>被分成两个以上冷却场的冷却层</td><td>2（layer b）</td><td>厚 0.1–5 mm</td><td>取热</td></tr><tr><td>含冷却剂分配管线的分配层</td><td>3（layer c）</td><td>厚 1–10 mm</td><td>供液、排汽、分配到各场</td></tr></tbody></table>
+<p>其余标号：4 水、5 蒸汽、6 冷却场、7 供液管线、8 无结构层、9 排汽管线、10 通向各冷却场的支管、11 反应介质纵向路径、12 冷却剂横向方向、13 反应介质、14 独立补液点。</p>
+<p><strong>镜像堆叠</strong>（权项 2、3）：一个 (a-b-c) 单元只有一面能贴反应层；把堆叠序列做成互为镜像，就得到 a-b-c-c-b-a，每个冷却层两侧都是反应层。</p>
+<hr>
+<h2>3 · 原理：为什么这样设计</h2>
+<p><strong>(1) 为什么必须有第三层。</strong> 如果供液与蒸发在同一层，冷却剂一进管口就开始沸腾，汽泡把液体挤开，下游的场拿不到液。把分配（层 c）与蒸发（层 b）分到不同平面后，层 b 的热流就不再取决于冷却剂的入口温度。这是权项 1 里第 (c) 层的真正作用（推断：原文只说"防止过热、保证温度均匀"，没有展开论证）。</p>
+<p><strong>(2) 为什么每场单进单出。</strong> 权项 13 规定每个冷却场在分配结构中只有一个供液口和一个排汽口。这带来两个后果：场与场之间在流体上完全并联，任何一场的流量只由自身压降决定；只要场的压降远大于分配管压降，各场就自动等流量。说明书直接写了这个目标："每个场几乎得到同量、几乎同温的冷却剂"。</p>
+<p><strong>(3) 为什么供液管径递减、排汽管径递增。</strong> 权项 10 要求供液线与排汽线取最大间距；权项 11、12 要求供液管水力直径沿流向递减、排汽管沿流向递增。递减是为了让沿线分流时各支路阻力接近；递增是因为越往下游蒸汽越多、体积流量越大（推断）。</p>
+<p><strong>(4) 为什么冷却场流道要折弯。</strong> Detailed Description 说得很明确：冷却剂（已受热或已转为蒸汽）的通道必须是弯的，即至少有一个折弯。原文给的理由是——这样重力对流动的影响很小，并且避免液滴被夹带出去。</p>
+<p><strong>(5) 为什么是错流。</strong> 权项 15 规定分配结构里的进液与排汽相对反应物流做错流。反应介质沿纵向（标号 11）走，冷却剂沿横向（标号 12）进。</p>
+<hr>
+<h2>4 · 制备 / 工艺流程</h2>
+<p>原文没有给制备工艺。它给的是结构与装配关系：层可以是板或膜（权项 4），层表面可以有结构（权项 6），催化剂填进这些结构里（权项 7、8）。</p>
+<hr>
+<h2>5 · 数据：它到底做到了什么</h2>
+<p><strong>没有数据。</strong> 全文没有实施例、没有曲线、没有表格。</p>
+<p>能算作"定量"的只有从权里的几何范围：</p>
+<table><thead><tr><th>指标</th><th>数值</th><th>出处</th></tr></thead><tbody><tr><td>层厚 a / b / c</td><td>0.5–10 / 0.1–5 / 1–10 mm</td><td>权项 5</td></tr><tr><td>反应通道高</td><td>0.4–8 mm</td><td>权项 9</td></tr><tr><td>供液通道水力直径</td><td>500 µm–5 mm（最优 700 µm–2 mm）</td><td>Detailed Description</td></tr><tr><td>排汽通道 / 供液通道</td><td>2–20 倍；无压使用时可达 100 倍</td><td>Detailed Description</td></tr></tbody></table>
+<hr>
+<h2>6 · 权利要求布局</h2>
+<ul><li><strong>权 1</strong>：三层堆叠序列（a 含催化剂层 / b 分成 2 个以上冷却场的层 / c 含分配管线的层），三件必须同时具备。</li><li><strong>权 2、3</strong>：多个堆叠序列；互为镜像。</li><li><strong>权 4</strong>：层可为板或膜。</li><li><strong>权 5</strong>：三层厚度范围。</li><li><strong>权 6–8</strong>：层表面有结构；催化剂填入结构；结构为反应通道或反应槽，填颗粒。</li><li><strong>权 9</strong>：反应通道高 0.4–8 mm。</li><li><strong>权 10</strong>：分配结构内供液线与排汽线取最大间距。</li><li><strong>权 11、12</strong>：供液管径沿流向递减；排汽管径沿流向递增。</li><li><strong>权 13</strong>：每场单一供液与排汽。</li><li><strong>权 14</strong>：催化剂为 Co、Fe、Ni、Rh、Ru 或其组合。</li><li><strong>权 15</strong>：供液与排汽相对反应物流错流。</li></ul>
+<p><strong>布局评价</strong>：权 1 是结构三件套，范围宽；真正的差异化在权 10–13 这组"分配几何"——它把"等温"落成了可检查的几何约束。要绕开，最直接的是改掉"每场单进单出"或多场共用一条供液总管。</p>
+<hr>
+<h2>7 · 证据边界</h2>
+<ol><li><strong>没有证明等温</strong> —— 全文主张近等温运行，但没有给出任何温度测量、温度分布或换热系数。</li><li><strong>没有证明压降</strong> —— 权 10–12 的管径递减/递增、最大间距，都是几何主张，没有对应的压降数据。</li><li><strong>没有实施例</strong> —— 没有一个具体设计被做出来并测过；所有数值都是范围。</li><li><strong>没有说明冷却场数量的上限</strong> —— 只写"两个以上"，场数与冷却能力的关系没有讨论。</li></ol>
+<hr>
+<h2>8 · 定位与自由实施</h2>
+<p>在微通道反应器的技术版图里，这件专利属于<strong>"分区蒸发冷却 + 内部换热"</strong>路线：不靠外部压力容器，靠板束自身承压；不靠单程错流，靠多个独立冷却场把沿程升温抹平。</p>
+<p><strong>要绕开它，必须避开</strong>：三层同时具备，尤其是"被分成两个以上冷却场的层"这一条。只做"反应层 + 单冷却层"的两层结构不落入权 1；但如果冷却层仍被分成多个独立供液场，仍可能落入。</p>
+<p><strong>真正的空白</strong>：冷却场数量与压降、换热能力的定量关系；镜面堆叠下的机械应力；长周期下的分配均匀性。</p>
+<hr>
+<h3>假设与简化</h3>
+<ul><li><strong>图鉴把冷却场画成四个</strong>：原文只说"两个以上"，四个取自附图（FIG. 2 的示意）；依据是专利附图。</li><li><strong>图鉴的试验台是构造的</strong>：专利里没有这台试验台，它只是把"四个场并联、各取各的液"这条关系摆成一台可看的装置；依据是权项 10–13 的几何关系。</li><li><strong>解剖台的三层厚度按可读性放大</strong>：实际 0.1–10 mm，三维场景里放大了才看得见；依据是可视化惯例，层序与连接关系未改。</li><li><strong>解剖台的"等温性对比"视图是模型曲线</strong>：专利没有给曲线，这条曲线是按热平衡示意画的；依据是 Background 里描述的失配机理。</li></ul>
+<hr>
+<h2>附录 A · 数值与标号出处</h2>
+<table><thead><tr><th>数值 / 标号</th><th>表述</th><th>原文位置</th></tr></thead><tbody><tr><td>1 / 2 / 3</td><td>层 a / 层 b / 层 c</td><td>CLAIMS 1；REFERENCE SIGNS LIST</td></tr><tr><td>4 / 5</td><td>水 / 蒸汽</td><td>REFERENCE SIGNS LIST</td></tr><tr><td>6</td><td>冷却场</td><td>REFERENCE SIGNS LIST</td></tr><tr><td>7 / 9 / 10</td><td>供液管线 / 排汽管线 / 通向各场的支管</td><td>REFERENCE SIGNS LIST</td></tr><tr><td>11 / 12 / 13</td><td>反应介质纵向路径 / 冷却剂横向方向 / 反应介质</td><td>REFERENCE SIGNS LIST</td></tr><tr><td>14</td><td>独立补液点</td><td>REFERENCE SIGNS LIST</td></tr><tr><td>0.5–10 / 0.1–5 / 1–10 mm</td><td>层 a / b / c 厚度</td><td>CLAIMS 5</td></tr><tr><td>0.4–8 mm</td><td>反应通道高</td><td>CLAIMS 9</td></tr><tr><td>500 µm–5 mm</td><td>供液通道水力直径</td><td>Detailed Description</td></tr><tr><td>700 µm–2 mm</td><td>供液通道水力直径（最优）</td><td>Detailed Description</td></tr><tr><td>2–20 倍</td><td>排汽通道相对供液通道</td><td>Detailed Description</td></tr><tr><td>100 倍</td><td>无压使用时的排汽/供液比</td><td>Detailed Description</td></tr><tr><td>权项 3</td><td>镜像堆叠</td><td>CLAIMS</td></tr><tr><td>权项 13</td><td>每场单一供液与排汽</td><td>CLAIMS</td></tr><tr><td>权项 15</td><td>错流</td><td>CLAIMS</td></tr></tbody></table>
+<hr>
+<h2>附录 B · 配套产出</h2>
+<table><thead><tr><th>产出</th><th>说明</th></tr></thead><tbody><tr><td>01 专利解剖台</td><td>三维交互：叠层解剖 / 冷却场流道 / 分配器错流 / 局部蒸干 / 等温性对比</td></tr><tr><td>02 专利结构动态演算图鉴</td><td>蒸发试验台：四个冷却场并联，指针调总供液量</td></tr></tbody></table>
+</main></body></html>
