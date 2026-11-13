@@ -125,13 +125,13 @@ check("package：解剖台 + 文档必有，图鉴可选", () => {
   return { ok: !missing.length && noAudit && thumbs >= 3, detail: `缺: ${missing.join(",") || "无"} · 缩略图 ${thumbs} · 无审计文件 ${noAudit}` };
 });
 
-check("check：文档缺固定章节会被抓", () => {
+check("形式不卡人：删一节只提醒，不阻断交付", () => {
   const doc = join(ROOT, "work", ID, "doc.md");
   const orig = readFileSync(doc, "utf8");
   try {
-    writeFileSync(doc, orig.replace("## 7 · 证据边界", "## 7 · 证据"));
+    writeFileSync(doc, orig.replace(/证据边界|没有证明|未证明|局限/g, "补充说明"));
     const r = run(["check", ID], { allowFail: true });
-    return { ok: r.code !== 0 && /E-DOC-SECTIONS/.test(r.out), detail: r.code !== 0 ? "已拦截" : "没抓到" };
+    return { ok: r.code === 0 && /W-DOC-EVIDENCE/.test(r.out), detail: r.code === 0 ? "只提醒不阻断" : "被误拦了" };
   } finally {
     writeFileSync(doc, orig);
   }
