@@ -7,6 +7,8 @@ metadata:
   opencode/slash: "true"
 ---
 
+> **本项目的裁剪副本**：未包含 `examples/`（体积原因）。画图手法见 `references/craft.md`，自检见 `references/verify.md`；来源与文件指纹见 `UPSTREAM.md`。
+
 # Anatomy
 
 This skill makes figures like a small instrument on a bench: a heavy base on feet, rails with tick rulers, a carriage on bushings, knurled knobs, coil springs, a dial gauge whose needle moves, screws as tiny dots. The reader understands the idea because they recognise the machine. Every number the figure shows comes from the same model that moves its parts.

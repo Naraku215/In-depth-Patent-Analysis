@@ -146,9 +146,9 @@ function cmdDoctor() {
   rows.push({ 项: "node", 值: process.version, 状态: major >= 20 ? "ok" : "FAIL" });
   rows.push({ 项: "仓库", 值: ROOT, 状态: existsSync(join(ROOT, "package.json")) ? "ok" : "FAIL" });
   rows.push({ 项: "输入目录", 值: cfg.patentsRoot, 状态: existsSync(cfg.patentsRoot) ? "ok" : "缺失" });
-  rows.push({ 项: "anatomy skill", 值: cfg.skillRoot, 状态: existsSync(skillPath("kit", "iso-kit.mjs")) ? "ok" : "缺失" });
-  rows.push({ 项: "capture", 值: skillPath("scripts", "capture.mjs"), 状态: existsSync(skillPath("scripts", "capture.mjs")) ? "ok" : "缺失" });
-  rows.push({ 项: "lines", 值: skillPath("scripts", "lines.mjs"), 状态: existsSync(skillPath("scripts", "lines.mjs")) ? "ok" : "缺失" });
+  const need = ["kit/iso-kit.mjs", "scripts/inline-kit.mjs", "scripts/capture.mjs", "scripts/chrome-port.mjs", "scripts/lines.mjs", "scripts/drive.mjs", "scripts/line-ends.mjs", "SKILL.md", "LICENSE"];
+  const missing = need.filter((f) => !existsSync(skillPath(...f.split("/"))));
+  rows.push({ 项: "anatomy 副本", 值: missing.length ? "缺 " + missing.join(", ") : `${need.length} 个文件齐`, 状态: missing.length ? "缺失" : "ok" });
   const { patents, error, stray } = scanPatents();
   const usable = error ? [] : patents.filter((p) => !p.incomplete);
   rows.push({ 项: "待解析", 值: error ? "—" : `${usable.length} 件`, 状态: error ? "检查输入目录" : usable.length ? "ok" : "空" });

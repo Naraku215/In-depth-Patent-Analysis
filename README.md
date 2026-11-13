@@ -79,7 +79,7 @@ bin/patent.mjs     命令行
 lib/               解析 / 校验 / 渲染 / 打包
 prompts/           图鉴、解剖台的画法
 templates/         解剖台站点、图脚本、文档骨架
-skills/anatomy/    vendored anatomy 制图技能（MIT）
+skills/anatomy/    vendored 的 anatomy 制图技能（MIT，裁剪版 220 KB，见 UPSTREAM.md）
 examples/          一件真实专利的完整样例（输入 + 产出）
 test/run.mjs       自检
 
