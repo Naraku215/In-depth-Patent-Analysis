@@ -134,8 +134,8 @@ async function main() {
   const profile = mkdtempSync(join(tmpdir(), "iso-drive-"));
   const chrome = spawn(binary, ["--headless=new", ...(process.platform === "linux" ? ["--no-sandbox"] : []), ...(process.platform === "win32" ? ["--do-not-de-elevate"] : []), "--remote-debugging-port=0", `--user-data-dir=${profile}`, "--no-first-run", "--no-default-browser-check", "--hide-scrollbars", "--allow-file-access-from-files", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist", "about:blank"]);
   const port = await chromePort(chrome, profile);
-  const finish = (code) => {
-    chrome.kill("SIGKILL");
+  const finish = async (code) => {
+    if (chrome.close) await chrome.close(); else chrome.kill("SIGKILL");
     try {
       rmSync(profile, { recursive: true, force: true });
     } catch {}

@@ -15,6 +15,7 @@ import { auditPatent, formatAudit, paragraphsFromMd, paragraphsFromMjs } from ".
 import { mdToHtml } from "../lib/md2html.mjs";
 import { bundleSite } from "../lib/bundle.mjs";
 import { verifyAll } from "../lib/verify.mjs";
+import { checkStationSemantics } from "../lib/semantics.mjs";
 import { packageOutputs } from "../lib/package.mjs";
 import { node, run } from "../lib/run.mjs";
 
@@ -226,7 +227,23 @@ function cmdInit(spec) {
 function cmdExtract(spec) {
   const p = pickTarget(spec);
   ensureDir(workDir(p.id));
-  const facts = parseCorpus(read(p.md), { id: p.id });
+  let facts = parseCorpus(read(p.md), { id: p.id });
+  const overridesPath = join(workDir(p.id), "facts.overrides.json");
+  if (existsSync(overridesPath)) {
+    const ov = readJson(overridesPath, {}) || {};
+    for (const key of ["title", "patentNo", "assignee", "figures", "numerals", "referenceSigns", "figureSigns", "extractionCorrections"]) {
+      if (ov[key] !== undefined) facts[key] = ov[key];
+    }
+    if (Array.isArray(ov.numbersAppend)) {
+      const seen = new Set(facts.numbers.map((n) => n.raw + "|" + n.unit + "|" + JSON.stringify(n.value)));
+      for (const n of ov.numbersAppend) {
+        const key = n.raw + "|" + n.unit + "|" + JSON.stringify(n.value);
+        if (!seen.has(key)) { facts.numbers.push(n); seen.add(key); }
+      }
+    }
+    if (Array.isArray(ov.warningsAppend)) facts.warnings.push(...ov.warningsAppend);
+    facts.warnings.push("已应用 facts.overrides.json 人工校正");
+  }
 
   // 附图文件清单：把 images/ 里的图挂到 facts 上，让 agent 知道要逐张打开哪几张
   facts.images = [];
@@ -250,7 +267,7 @@ function cmdExtract(spec) {
 
   writeJson(join(workDir(p.id), "facts.json"), facts);
   setStage(p.id, "extracted", { at: new Date().toISOString(), chars: facts.stats.chars });
-  ok(`${p.id}：段落 ${facts.paragraphs.length} · 权项 ${facts.claims.length} · 标号 ${facts.numerals.length} · 附图 ${facts.figures.length} · 图片 ${facts.images.length} · 数字 ${facts.numbers.length}`);
+  ok(`${p.id}：段落 ${facts.paragraphs.length} · 权项 ${facts.claims.length} · 标号 ${facts.numerals.length} · 候选 ${facts.referenceSigns.length} · 附图 ${facts.figures.length} · 图片 ${facts.images.length} · 数字 ${facts.numbers.length}`);
   for (const w of facts.warnings) warn("  " + w);
   if (facts.images.length) info(`  图片：${facts.images.map((i) => i.file.split("/").pop()).join(", ")}`);
   return 0;
@@ -376,6 +393,10 @@ async function cmdVerify(spec) {
   for (const [k, v] of Object.entries(r.files)) rows.push({ 项: `文件 ${k}`, 结果: v ? "ok" : "缺失" });
   for (const [k, v] of Object.entries(r.lines)) rows.push({ 项: `悬空线端 ${k}`, 结果: v.ok === null ? "跳过" : v.ok ? "0" : `FAIL ${v.ends}` });
   for (const [k, v] of Object.entries(r.render)) rows.push({ 项: `渲染 ${k}`, 结果: v.ok === null ? "跳过" : v.ok ? "clean" : v.chromeMissing ? "无法启动 Chrome" : "FAIL" });
+  if (r.semantics?.station) {
+    const s = r.semantics.station;
+    rows.push({ 项: "语义 station", 结果: s.ok === null ? "跳过" : s.ok ? "ok" : `FAIL ${(s.errors || []).length}` });
+  }
   console.log(table(rows, ["项", "结果"]));
   writeJson(join(wd, ".verify.json"), r);
   return rows.some((x) => String(x.结果).startsWith("FAIL")) ? 3 : 0;
@@ -407,6 +428,16 @@ async function cmdPackage(spec) {
   if (!c.ok) {
     console.log(formatAudit(c));
     return fail(`内部校验未通过（${c.score}/100），先修再交付：node bin/patent.mjs check`);
+  }
+
+  const stationPre = join(wd, cfg.outputs.station);
+  if (existsSync(stationPre)) {
+    const sem = await checkStationSemantics(stationPre, ensureDir(join(wd, ".verify")));
+    if (sem.ok === false) {
+      const first = (sem.errors || []).slice(0, 4).map((e) => `${e.label || e.view}: 图上缺 ${(e.missingInLabels || []).join(",") || "-"}；表缺 ${(e.missingInTable || []).join(",") || "-"}`).join(" | ");
+      return fail(`语义校验未通过：图上标号与右栏标号表不一致。${first}`);
+    }
+    if (sem.ok === null) warn(`语义校验跳过：${sem.skipped || ""}`);
   }
 
   const thumbDir = ensureDir(join(wd, ".thumbs"));

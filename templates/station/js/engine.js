@@ -413,7 +413,9 @@
       const g = document.createElementNS(NS, 'g');
       const ln = document.createElementNS(NS, 'line');
       const dot = document.createElementNS(NS, 'circle');
-      dot.setAttribute('r', 2.2);
+      dot.setAttribute('r', 3.2);
+      dot.setAttribute('stroke', '#02060d');
+      dot.setAttribute('stroke-width', '1.1');
       const tx = document.createElementNS(NS, 'text');
       tx.textContent = labels[i].text;
       tx.setAttribute('font-size', labels[i].size);
@@ -680,9 +682,9 @@
       L.line.setAttribute('x2', tx.toFixed(1));
       L.line.setAttribute('y2', ty.toFixed(1));
       L.line.setAttribute('stroke', lb.color);
-      L.line.setAttribute('stroke-width', '0.8');
-      L.line.setAttribute('stroke-opacity', '0.5');
-      L.line.setAttribute('stroke-dasharray', '2 2');
+      L.line.setAttribute('stroke-width', '1.25');
+      L.line.setAttribute('stroke-opacity', '0.82');
+      L.line.setAttribute('stroke-dasharray', 'none');
       L.text.setAttribute('x', tx.toFixed(1));
       L.text.setAttribute('y', (ty + 3.5).toFixed(1));
     }

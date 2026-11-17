@@ -136,8 +136,8 @@ async function main() {
     "about:blank",
   ]);
   const port = await chromePort(chrome, profile);
-  const finish = (code) => {
-    chrome.kill("SIGKILL");
+  const finish = async (code) => {
+    if (chrome.close) await chrome.close(); else chrome.kill("SIGKILL");
     try {
       rmSync(profile, { recursive: true, force: true });
     } catch {}

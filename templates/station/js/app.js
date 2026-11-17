@@ -230,6 +230,34 @@
     $('legend').innerHTML = items.map(i => '<span><i style="background:' + i[0] + '"></i>' + i[1] + '</span>').join('');
   }
 
+  /* ---------------- 语义验收入口 ---------------- */
+  window.__anatomyAudit = {
+    async collect() {
+      const p = A.scenes[curPatent];
+      if (!p) return [];
+      const views = [];
+      for (let i = 0; i < p.views.length; i++) {
+        selectView(i, true);
+        await new Promise(function (r) { setTimeout(r, 180); });
+        const viewport = $('viewport');
+        const vr = viewport.getBoundingClientRect();
+        const svg = viewport.querySelector('svg');
+        const texts = svg ? Array.from(svg.querySelectorAll('text')) : [];
+        const labelled = texts.filter(function (el) { return /^\d/.test((el.textContent || '').trim()); });
+        const labels = labelled.map(function (el) { return el.textContent.trim(); });
+        const boxes = labelled.map(function (el) {
+          const r = el.getBoundingClientRect();
+          return { text: el.textContent.trim(), x: r.x, y: r.y, w: r.width, h: r.height };
+        });
+        const parts = Array.from(document.querySelectorAll('#asideBody .parts table tr td:first-child'))
+          .map(function (el) { return (el.textContent || '').trim(); })
+          .filter(function (t) { return /^\d/.test(t); });
+        views.push({ id: p.views[i].id, label: p.views[i].label, labels: labels, parts: parts, boxes: boxes, viewport: { x: vr.x, y: vr.y, w: vr.width, h: vr.height } });
+      }
+      return views;
+    }
+  };
+
   /* ---------------- 启动 ---------------- */
   buildRail();
   buildMeta();

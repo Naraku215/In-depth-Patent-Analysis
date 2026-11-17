@@ -190,7 +190,7 @@ select {
 .aside p { font-size: 12.2px; line-height: 1.82; color: var(--txt2); margin-bottom: 9px; }
 .aside p b { color: var(--txt); font-weight: 600; }
 .aside p em { color: var(--acc); font-style: normal; }
-.aside ol { padding-left: 0; counter-reset: step; margin-bottom: 10px; }
+.aside ol { list-style: none; padding-left: 0; counter-reset: step; margin-bottom: 10px; }
 .aside ol li {
   position: relative; padding-left: 22px; margin-bottom: 7px;
   font-size: 12.2px; line-height: 1.75; color: var(--txt2); counter-increment: step;
@@ -247,3 +247,6 @@ select {
 @media (max-width: 1080px) {
   .aside { display: none; }
 }
+
+/* 可选：标号在画面中的位置提示，不强制使用 */
+.parts .loc { display:block; margin-top:1px; color:var(--txt3); font-size:10.2px; line-height:1.45; }
